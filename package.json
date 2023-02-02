@@ -1,0 +1,75 @@
+{
+  "name": "chatgpt-writer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build --config vite.config.renderer.ts",
+    "build:all": "npm-run-all build:main build:renderer",
+    "start": "electron ./dist/main.cjs",
+    "build-start": "npm-run-all clean build:all start",
+    "lint": "eslint --fix ./**/*.{tsx,ts}",
+    "vite:dev": "vite",
+    "vite:build": "vite build",
+    "vite:serve": "vite preview",
+    "vite:prdbuild": "vite build --config vite.config.prd.js",
+    "electron:start": "set NODE_ENV=development && electron .",
+    "electron:build": "set NODE_ENV=production && electron-builder --win --x64 --dir",
+    "electron:macbuild": "set NODE_ENV=production && electron-builder --mac --dir"
+  },
+  "build": {
+    "extraMetadata": {
+      "main": "./dist/main.cjs"
+    },
+    "appId": "com.electron.yourapp",
+    "directories": {
+      "output": "electron-build"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "icon": "assets/mac/icon_mac.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "assets/win/icon_win.ico",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@vitejs/plugin-react": "^3.0.1",
+    "electron": "^22.1.0",
+    "electron-builder": "^23.6.0",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard-with-typescript": "^33.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.3",
+    "rimraf": "^4.1.2",
+    "typescript": "^4.9.5",
+    "vite": "^4.0.0"
+  }
+}
