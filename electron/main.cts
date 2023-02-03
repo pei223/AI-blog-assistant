@@ -26,7 +26,6 @@ const createWindow = () => {
   ipcMain.handle(
     "generate-text",
     async (_e, text: string, option: GenerateOption): Promise<string> => {
-      console.log("generate");
       return await openAiWrapper.generateText(text, option);
     }
   );
