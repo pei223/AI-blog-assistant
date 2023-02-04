@@ -6,9 +6,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:main": "tsc -p tsconfig.main.json",
-    "build:renderer": "vite build --config vite.config.renderer.ts",
+    "build:renderer": "vite build --config vite.config.renderer.ts --mode development",
     "build:all": "npm-run-all build:main build:renderer",
-    "start": "electron ./dist/main.cjs",
+    "start": "electron ./dist/main/main.cjs",
     "build-start": "npm-run-all clean build:all start",
     "lint": "eslint --fix ./**/*.{tsx,ts}",
     "vite:dev": "vite",
@@ -21,7 +21,7 @@
   },
   "build": {
     "extraMetadata": {
-      "main": "./dist/main.cjs"
+      "main": "./dist/main/main.cjs"
     },
     "appId": "com.electron.yourapp",
     "directories": {
