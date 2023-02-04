@@ -31,7 +31,7 @@ const createWindow = () => {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises, n/no-path-concat
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 };
 
 app.once("ready", () => {
