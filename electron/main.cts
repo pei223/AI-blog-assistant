@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
-import { openAiWrapper } from "./chatgpt/index.cjs";
-import { GenerateOption } from "./chatgpt/types.cjs";
+import { openAiWrapper } from "./openai/index.cjs";
+import { GenerateOption } from "./openai/types.cjs";
 import { getApiKey, setApiKey } from "./settings/index.cjs";
 
 const createWindow = () => {

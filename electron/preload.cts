@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge } from "electron";
-import { GenerateOption } from "./chatgpt/types.cjs";
+import { GenerateOption } from "./openai/types.cjs";
 
 contextBridge.exposeInMainWorld("mainProcess", {
   getAPIKey: async (): Promise<string> =>
