@@ -13,7 +13,7 @@ interface Window {
 declare let window: Window
 
 interface MainProcess {
-  getAPIKey: () => Promise<string | error>;
+  getAPIKey: () => Promise<string | Error>;
   setAPIKey: (keyVal: string) => Promise<void>;
   generateText: (text: string, option?: GenerateOption) => Promise<string>;
 }
