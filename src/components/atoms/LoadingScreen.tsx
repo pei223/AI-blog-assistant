@@ -19,15 +19,15 @@ const StyledProgressWrapper = styled.div`
 `;
 
 type Props = {
-  text: string;
+  text?: string;
 };
 
-const LoadingScreen: React.FC<Props> = ({ text = "ロード中" }) => {
+const LoadingScreen: React.FC<Props> = ({ text }) => {
   return (
     <StyledFullScreen>
       <StyledProgressWrapper>
         <CircularProgress color="primary" size={50} />
-        <p style={{ margin: "0" }}>{text}</p>
+        {text != null && <p style={{ margin: "0" }}>{text}</p>}
       </StyledProgressWrapper>
     </StyledFullScreen>
   );
