@@ -15,5 +15,5 @@ declare let window: Window
 interface MainProcess {
   getAPIKey: () => Promise<string | error>;
   setAPIKey: (keyVal: string) => Promise<void>;
-  generateText: (text: string, option: GenerateOption) => Promise<string>;
+  generateText: (text: string, option?: GenerateOption) => Promise<string>;
 }
