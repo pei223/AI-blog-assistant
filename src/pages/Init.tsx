@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { getAPIKey, setAPIKey } from "../main-module";
 import { useErrorHandler } from "react-error-boundary";
 
-const InitSetting = () => {
+const Init = () => {
   const [apiKeyVal, setApiKeyVal] = useState("");
   const navigate = useNavigate();
   const errHandler = useErrorHandler();
@@ -43,4 +43,4 @@ const InitSetting = () => {
     </Container>
   );
 };
-export default InitSetting;
+export default Init;

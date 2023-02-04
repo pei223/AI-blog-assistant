@@ -4,7 +4,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 import AppErrorFallback from "./AppErrorFallback";
-import InitSetting from "./pages/InitSetting";
+import Init from "./pages/Init";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Generate from "./pages/Generate";
 
@@ -14,7 +14,7 @@ const AppRouter = () => {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<InitSetting />} />
+        <Route path="/" element={<Init />} />
         <Route path="/generate" element={<Generate />} />
       </Routes>
     </HashRouter>
