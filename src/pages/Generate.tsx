@@ -90,7 +90,7 @@ const Generate = () => {
   };
 
   return (
-    <Layout>
+    <Layout initialized={true}>
       <Typography variant="h3" marginY={"30px"}>
         ブログ生成
       </Typography>

@@ -10,8 +10,10 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import EditIcon from "@mui/icons-material/Edit";
 import SettingIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -20,27 +22,39 @@ interface SidebarMenu {
   icon: () => React.ReactNode;
   link: string;
   text: string;
+  requireInit: boolean;
 }
 
 const sidebarMenuList: SidebarMenu[] = [
   {
+    icon: () => <EditIcon />,
+    link: "/generate",
+    text: "ブログ生成",
+    requireInit: true,
+  },
+  {
     icon: () => <SettingIcon />,
     link: "/settings",
     text: "設定",
+    requireInit: false,
   },
+
 ];
 
 type Props = {
   children: React.ReactNode;
+  initialized: boolean
 };
 
 const StyledList = styled(List)`
   min-width: 300px;
 `;
 
-const Layout: React.FC<Props> = ({ children }) => {
+const Layout: React.FC<Props> = ({ children, initialized }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navitate = useNavigate();
+
+  const menues = sidebarMenuList.filter((menu) => !menu.requireInit || initialized )
   return (
     <>
       <AppBar>
@@ -52,6 +66,9 @@ const Layout: React.FC<Props> = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
+          <Typography marginLeft="20px">
+            AI blog assistant
+          </Typography>
           <Drawer
             open={sidebarOpen}
             onClose={() => {
@@ -59,7 +76,7 @@ const Layout: React.FC<Props> = ({ children }) => {
             }}
           >
             <StyledList>
-              {sidebarMenuList.map((menu) => (
+              {menues.map((menu) => (
                 <ListItem
                   key={menu.link}
                   onClick={() => {
