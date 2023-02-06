@@ -1,97 +1,92 @@
-import React, { useState } from "react";
-import {
-  Button,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useErrorHandler } from "react-error-boundary";
-import Layout from "../Layout";
-import { generateFromTemplate } from "../template-mod";
-import { ContentTemplate, SummaryTemplate } from "../openai/template";
-import styled from "styled-components";
-import { type GenerateOption } from "../openai/types";
-import LoadingScreen from "../components/atoms/LoadingScreen";
-import { generateText } from "../main-module";
+import React, { useState } from 'react'
+import { Button, Grid, TextField, Typography } from '@mui/material'
+import { useErrorHandler } from 'react-error-boundary'
+import Layout from '../Layout'
+import { generateFromTemplate } from '../template-mod'
+import { ContentTemplate, SummaryTemplate } from '../openai/template'
+import styled from 'styled-components'
+import { type GenerateOption } from '../openai/types'
+import LoadingScreen from '../components/atoms/LoadingScreen'
+import { generateText } from '../main-module'
 
 const defaultContentGenerateOption: GenerateOption = {
-  model: "text-curie-001",
-  max_tokens: 1500,
-};
+  model: 'text-davinci-003',
+  max_tokens: 2048
+}
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
   margin-top: 10px;
   margin-bottom: 20px;
-`;
+`
 
 const Generate = () => {
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState('')
+  const [summary, setSummary] = useState('')
+  const [content, setContent] = useState('')
 
-  const errHandler = useErrorHandler();
+  const errHandler = useErrorHandler()
 
   const generateContentFromTitle = () => {
     const inner = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const summaryGenText = generateFromTemplate(SummaryTemplate, {
-          title,
-        });
+          title
+        })
 
-        const _summary = await generateText(summaryGenText);
-        setSummary(_summary);
+        const _summary = await generateText(summaryGenText)
+        setSummary(_summary)
         const contentGenText = generateFromTemplate(ContentTemplate, {
           title,
-          sumary: _summary,
-        });
+          summary: _summary
+        })
         // @ts-check
         const _content = await generateText(
           contentGenText,
           defaultContentGenerateOption
-        );
-        setContent(_content);
+        )
+        setContent(_content)
       } catch (e) {
-        errHandler(e);
+        errHandler(e)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
     inner()
       .then(() => {})
-      .catch(() => {});
-  };
+      .catch(() => {})
+  }
 
   const generateContentFromSummary = () => {
     const inner = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const contentGenText = generateFromTemplate(ContentTemplate, {
           title,
-          summary,
-        });
+          summary
+        })
         // @ts-check
         const _content = await generateText(
           contentGenText,
           defaultContentGenerateOption
-        );
-        setContent(_content);
+        )
+        setContent(_content)
       } catch (e) {
-        errHandler(e);
+        errHandler(e)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
     inner()
       .then(() => {})
-      .catch(() => {});
-  };
+      .catch(() => {})
+  }
 
   return (
     <Layout initialized={true}>
-      <Typography variant="h3" marginY={"30px"}>
+      <Typography variant="h3" marginY={'30px'}>
         ブログ生成
       </Typography>
       <Grid container spacing={2}>
@@ -101,14 +96,14 @@ const Generate = () => {
             label="タイトルを入力"
             value={title}
             onChange={(e) => {
-              setTitle(e.target.value);
+              setTitle(e.target.value)
             }}
           />
           <StyledButtonWrapper>
             <Button
               variant="outlined"
               onClick={() => {
-                generateContentFromTitle();
+                generateContentFromTitle()
               }}
             >
               生成
@@ -123,14 +118,14 @@ const Generate = () => {
             rows={6}
             value={summary}
             onChange={(e) => {
-              setSummary(e.target.value);
+              setSummary(e.target.value)
             }}
           />
           <StyledButtonWrapper>
             <Button
               variant="outlined"
               onClick={() => {
-                generateContentFromSummary();
+                generateContentFromSummary()
               }}
             >
               目次から生成
@@ -145,7 +140,7 @@ const Generate = () => {
             rows={10}
             value={content}
             onChange={(e) => {
-              setContent(e.target.value);
+              setContent(e.target.value)
             }}
           />
         </Grid>
@@ -153,6 +148,6 @@ const Generate = () => {
 
       {loading && <LoadingScreen text="" />}
     </Layout>
-  );
-};
-export default Generate;
+  )
+}
+export default Generate
