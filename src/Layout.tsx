@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   AppBar,
   Container,
@@ -10,69 +10,68 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import EditIcon from "@mui/icons-material/Edit";
-import SettingIcon from "@mui/icons-material/Settings";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+  Typography
+} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import EditIcon from '@mui/icons-material/Edit'
+import SettingIcon from '@mui/icons-material/Settings'
+import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 
 interface SidebarMenu {
-  icon: () => React.ReactNode;
-  link: string;
-  text: string;
-  requireInit: boolean;
+  icon: () => React.ReactNode
+  link: string
+  text: string
+  requireInit: boolean
 }
 
 const sidebarMenuList: SidebarMenu[] = [
   {
     icon: () => <EditIcon />,
-    link: "/generate",
-    text: "ブログ生成",
-    requireInit: true,
+    link: '/generate',
+    text: 'ブログ生成',
+    requireInit: true
   },
   {
     icon: () => <SettingIcon />,
-    link: "/settings",
-    text: "設定",
-    requireInit: false,
-  },
-
-];
+    link: '/settings',
+    text: '設定',
+    requireInit: true
+  }
+]
 
 type Props = {
-  children: React.ReactNode;
+  children: React.ReactNode
   initialized: boolean
-};
+}
 
 const StyledList = styled(List)`
   min-width: 300px;
-`;
+`
 
 const Layout: React.FC<Props> = ({ children, initialized }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navitate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const navitate = useNavigate()
 
-  const menues = sidebarMenuList.filter((menu) => !menu.requireInit || initialized )
+  const menues = sidebarMenuList.filter(
+    (menu) => !menu.requireInit || initialized
+  )
   return (
     <>
       <AppBar>
         <Toolbar>
           <IconButton
             onClick={() => {
-              setSidebarOpen(!sidebarOpen);
+              setSidebarOpen(!sidebarOpen)
             }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography marginLeft="20px">
-            AI blog assistant
-          </Typography>
+          <Typography marginLeft="20px">AI blog assistant</Typography>
           <Drawer
             open={sidebarOpen}
             onClose={() => {
-              setSidebarOpen(false);
+              setSidebarOpen(false)
             }}
           >
             <StyledList>
@@ -80,7 +79,7 @@ const Layout: React.FC<Props> = ({ children, initialized }) => {
                 <ListItem
                   key={menu.link}
                   onClick={() => {
-                    navitate(menu.link);
+                    navitate(menu.link)
                   }}
                 >
                   <ListItemButton>
@@ -96,7 +95,7 @@ const Layout: React.FC<Props> = ({ children, initialized }) => {
       <Toolbar />
       <Container>{children}</Container>
     </>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout
