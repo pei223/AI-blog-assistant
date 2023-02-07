@@ -1,3 +1,3 @@
 export interface Setting {
-  apiKey: string;
+  apiKey: string
 }
