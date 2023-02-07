@@ -1,7 +1,12 @@
 import { app } from 'electron'
 import { join } from 'path'
+import * as fs from 'fs'
 
 export const appDirPath = (): string => {
   const userData = app.getPath('home')
-  return join(userData, '/.ai_blog_assistant')
+  const dirPath = join(userData, '/.ai_blog_assistant')
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+  return dirPath
 }
