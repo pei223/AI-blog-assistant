@@ -3,17 +3,19 @@
 
 declare namespace NodeJS {
   interface ImportMetaEnv {
-    MODE: "development" | "production"
+    MODE: 'development' | 'production'
   }
 }
 
 interface Window {
-  mainProcess: MainProcess;
+  mainProcess: MainProcess
 }
 declare let window: Window
 
 interface MainProcess {
-  getAPIKey: () => Promise<string | Error>;
-  setAPIKey: (keyVal: string) => Promise<void>;
-  generateText: (text: string, option?: GenerateOption) => Promise<string>;
+  getAPIKey: () => Promise<string | Error>
+  setAPIKey: (keyVal: string) => Promise<void>
+  getAiSettingDict: () => Promise<AiSettingDict>
+  setAiSettingDict: (dict: AiSettingDict) => Promise<void>
+  generateText: (text: string, option?: GenerateOption) => Promise<string>
 }
