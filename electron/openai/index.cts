@@ -1,6 +1,6 @@
-import { Configuration, CreateCompletionRequest, OpenAIApi } from 'openai'
+import { Configuration, OpenAIApi } from 'openai'
 import { ErrorPrefixTypeVal } from '../errors/types.cjs'
-import { GenerateOption, InitialGenerateOption } from './types.cjs'
+import { GenerateOption } from './types.cjs'
 import { join } from 'path'
 import * as fs from 'fs'
 import { AiSettingDict } from './types.cjs'
@@ -18,19 +18,15 @@ export class OpenAiWrapper {
     )
   }
 
-  async generateText(text: string, option?: GenerateOption): Promise<string> {
+  async generateText(text: string, option: GenerateOption): Promise<string> {
     if (this.openAiApi == null) {
       throw new Error(
         `${ErrorPrefixTypeVal.OpenAiApiNotInitialized} not initialized`
       )
     }
-    const genOption = {
-      ...InitialGenerateOption,
-      ...(option == null ? {} : option)
-    }
     const completion = await this.openAiApi.createCompletion({
       prompt: text,
-      ...genOption
+      ...option
     })
     const pop = completion.data.choices.pop()
     return pop?.text == null ? '' : pop.text
