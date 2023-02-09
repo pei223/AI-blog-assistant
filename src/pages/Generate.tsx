@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Grid, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  TextField,
+  Typography
+} from '@mui/material'
 import { useErrorHandler } from 'react-error-boundary'
 import Layout from '../Layout'
 import { generateFromTemplate } from '../template-mod'
@@ -13,6 +21,9 @@ import {
 } from '../openai/types'
 import LoadingScreen from '../components/atoms/LoadingScreen'
 import { generateText } from '../main-module'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { errorLog } from '../logger'
+import { useSnackbar } from 'notistack'
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
@@ -21,12 +32,15 @@ const StyledButtonWrapper = styled.div`
 `
 
 const Generate = () => {
-  const [loading, setLoading] = useState(false)
+  const [loadingState, setLoadingState] = useState<
+    'summary' | 'content' | null
+  >(null)
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
   const [content, setContent] = useState('')
   const [aiSettingDict, setAiSettingDict] = useState<AiSettingDict>({})
 
+  const snack = useSnackbar()
   const errHandler = useErrorHandler()
 
   useEffect(() => {
@@ -40,9 +54,22 @@ const Generate = () => {
       })
   })
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        snack.enqueueSnackbar('コピーしました', {
+          variant: 'info'
+        })
+      })
+      .catch((e) => {
+        errorLog(e)
+      })
+  }
+
   const generateContentFromTitle = () => {
     const inner = async () => {
-      setLoading(true)
+      setLoadingState('summary')
       const summaryAiSetting =
         aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
       const contentAiSetting =
@@ -59,6 +86,8 @@ const Generate = () => {
         const _summary = await generateText(summaryGenText, summaryGenOption)
         setSummary(_summary)
 
+        setLoadingState('content')
+
         const contentGenText = generateFromTemplate(contentTemplate, {
           title,
           summary: _summary
@@ -68,7 +97,7 @@ const Generate = () => {
       } catch (e) {
         errHandler(e)
       } finally {
-        setLoading(false)
+        setLoadingState(null)
       }
     }
     inner()
@@ -78,7 +107,7 @@ const Generate = () => {
 
   const generateContentFromSummary = () => {
     const inner = async () => {
-      setLoading(true)
+      setLoadingState('content')
       try {
         const contentAiSetting =
           aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
@@ -92,7 +121,7 @@ const Generate = () => {
       } catch (e) {
         errHandler(e)
       } finally {
-        setLoading(false)
+        setLoadingState(null)
       }
     }
     inner()
@@ -105,8 +134,8 @@ const Generate = () => {
       <Typography variant="h3" marginY={'30px'}>
         ブログ生成
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Card sx={{ mb: 5 }}>
+        <CardContent>
           <TextField
             fullWidth
             label="タイトルを入力"
@@ -125,44 +154,77 @@ const Generate = () => {
               生成
             </Button>
           </StyledButtonWrapper>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            multiline
-            label="目次"
-            rows={6}
-            value={summary}
-            onChange={(e) => {
-              setSummary(e.target.value)
-            }}
-          />
-          <StyledButtonWrapper>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                generateContentFromSummary()
-              }}
+          <Box sx={{ mb: 5 }}>
+            <Box
+              sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}
             >
-              目次から生成
-            </Button>
-          </StyledButtonWrapper>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            multiline
-            label="内容"
-            rows={10}
-            value={content}
-            onChange={(e) => {
-              setContent(e.target.value)
-            }}
-          />
-        </Grid>
-      </Grid>
-
-      {loading && <LoadingScreen text="" />}
+              <Typography variant="h5" marginRight={'auto'}>
+                目次
+              </Typography>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  copyToClipboard(summary)
+                }}
+              >
+                <ContentCopyIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <TextField
+              fullWidth
+              multiline
+              rows={6}
+              value={summary}
+              onChange={(e) => {
+                setSummary(e.target.value)
+              }}
+            />
+            <StyledButtonWrapper>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  generateContentFromSummary()
+                }}
+              >
+                目次から生成
+              </Button>
+            </StyledButtonWrapper>
+          </Box>
+          <Box sx={{ mb: 5 }}>
+            <Box
+              sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}
+            >
+              <Typography variant="h5" marginRight={'auto'}>
+                ブログ内容
+              </Typography>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  copyToClipboard(content)
+                }}
+              >
+                <ContentCopyIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <TextField
+              fullWidth
+              multiline
+              rows={10}
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value)
+              }}
+            />
+          </Box>
+        </CardContent>
+      </Card>
+      {loadingState != null && (
+        <LoadingScreen
+          text={
+            loadingState === 'summary' ? '目次生成中...' : 'ブログ記事生成中...'
+          }
+        />
+      )}
     </Layout>
   )
 }
