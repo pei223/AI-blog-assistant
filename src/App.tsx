@@ -8,8 +8,19 @@ import Init from './pages/Init'
 import { createTheme, ThemeProvider } from '@mui/material'
 import Generate from './pages/Generate'
 import Settings from './pages/Settings'
+import { indigo, teal } from '@mui/material/colors'
 
-const theme = createTheme()
+const theme = createTheme({
+  spacing: 8,
+  palette: {
+    primary: {
+      main: indigo[500]
+    },
+    secondary: {
+      main: teal[500]
+    }
+  }
+})
 
 const AppRouter = () => {
   return (
