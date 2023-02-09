@@ -1,9 +1,11 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
@@ -40,6 +42,15 @@ const AiModelSettings: React.FC<Props> = ({
     setTemperature(value.temperature as number)
   }, [value])
 
+  const isChanged = (): boolean => {
+    return !(
+      template === value.template &&
+      model === value.model &&
+      temperature === value.temperature &&
+      maxTokens === value.max_tokens
+    )
+  }
+
   const submit = () => {
     onSubmit({
       max_tokens: maxTokens,
@@ -56,15 +67,15 @@ const AiModelSettings: React.FC<Props> = ({
   }
 
   return (
-    <Card>
+    <Card sx={{ p: 3 }}>
       <CardContent>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="div" marginBottom={2}>
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" marginBottom={3}>
           文章生成時の設定ができます。
         </Typography>
-        <section>
+        <Box sx={{ pb: 2 }}>
           <FormControl fullWidth>
             <InputLabel id="model-select-label">モデル</InputLabel>
             <Select
@@ -83,46 +94,57 @@ const AiModelSettings: React.FC<Props> = ({
               ))}
             </Select>
           </FormControl>
-        </section>
-        <section>
-          <TextField
-            value={temperature}
-            label="temperature"
-            type="number"
-            onChange={(e) => {
-              setTemperature(Number(e.target.value))
-            }}
-          />
-          <TextField
-            value={maxTokens}
-            label="最大トークン数"
-            type="number"
-            onChange={(e) => {
-              setMaxTokens(Number(e.target.value))
-            }}
-          />
-        </section>
-        <section>
-          <FormControl fullWidth>
+        </Box>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item sm={6}>
             <TextField
               fullWidth
-              multiline
-              label="テンプレート"
-              rows={6}
-              value={template}
+              value={temperature}
+              label="temperature"
+              type="number"
+              variant="standard"
               onChange={(e) => {
-                setTemplate(e.target.value)
+                setTemperature(Number(e.target.value))
               }}
             />
-          </FormControl>
-        </section>
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              value={maxTokens}
+              label="最大トークン数"
+              type="number"
+              variant="standard"
+              onChange={(e) => {
+                setMaxTokens(Number(e.target.value))
+              }}
+            />
+          </Grid>
+        </Grid>
+        <Box>
+          <TextField
+            fullWidth
+            multiline
+            label="テンプレート"
+            rows={6}
+            value={template}
+            onChange={(e) => {
+              setTemplate(e.target.value)
+            }}
+          />
+        </Box>
       </CardContent>
 
       <CardActions>
-        <Button size="small" color="primary" onClick={submit}>
+        <Button
+          color="primary"
+          onClick={submit}
+          disabled={!isChanged()}
+          variant="contained"
+        >
           保存
         </Button>
-        <Button size="small" color="info" onClick={reset}>
+        <Button color="inherit" variant="outlined" onClick={reset}>
           初期値に戻す
         </Button>
       </CardActions>

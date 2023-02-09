@@ -1,3 +1,4 @@
+import { Grid } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import React, { useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
@@ -56,18 +57,28 @@ const Settings = () => {
   }
   return (
     <Layout initialized={true}>
-      <AiModelSettings
-        title="目次のAI設定"
-        value={aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING}
-        onSubmit={saveSummaryAiSetting}
-        initValue={INITIAL_SUMMARY_AI_SETTING}
-      />
-      <AiModelSettings
-        title="ブログのAI設定"
-        value={aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING}
-        onSubmit={saveContentAiSetting}
-        initValue={INITIAL_CONTENT_AI_SETTING}
-      />
+      <Grid container spacing={2}>
+        <Grid item sm={12} md={6}>
+          <AiModelSettings
+            title="目次のAI設定"
+            value={
+              aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
+            }
+            onSubmit={saveSummaryAiSetting}
+            initValue={INITIAL_SUMMARY_AI_SETTING}
+          />
+        </Grid>
+        <Grid item sm={12} md={6}>
+          <AiModelSettings
+            title="ブログのAI設定"
+            value={
+              aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
+            }
+            onSubmit={saveContentAiSetting}
+            initValue={INITIAL_CONTENT_AI_SETTING}
+          />
+        </Grid>
+      </Grid>
     </Layout>
   )
 }
