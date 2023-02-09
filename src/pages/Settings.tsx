@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react'
 import { Grid } from '@mui/material'
 import { useSnackbar } from 'notistack'
-import React, { useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
+import LoadingScreen from '../components/atoms/LoadingScreen'
 import AiModelSettings from '../components/blocks/AiModelSettings'
 import Layout from '../Layout'
 import {
@@ -15,10 +16,13 @@ import {
 
 const Settings = () => {
   const snack = useSnackbar()
-  const [aiSettingDict, setAiSettingDict] = useState<AiSettingDict>({})
   const errHandler = useErrorHandler()
 
+  const [loading, setLoading] = useState(false)
+  const [aiSettingDict, setAiSettingDict] = useState<AiSettingDict>({})
+
   useEffect(() => {
+    setLoading(true)
     window.mainProcess
       .getAiSettingDict()
       .then((dict) => {
@@ -26,6 +30,9 @@ const Settings = () => {
       })
       .catch((e) => {
         errHandler(e)
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }, [])
 
@@ -36,7 +43,9 @@ const Settings = () => {
       .setAiSettingDict(newDict)
       .then(() => {
         setAiSettingDict(newDict)
-        snack.enqueueSnackbar('保存しました', {})
+        snack.enqueueSnackbar('保存しました', {
+          variant: 'success'
+        })
       })
       .catch((e) => {
         errHandler(e)
@@ -49,11 +58,20 @@ const Settings = () => {
       .setAiSettingDict(newDict)
       .then(() => {
         setAiSettingDict(newDict)
-        snack.enqueueSnackbar('保存しました', {})
+        snack.enqueueSnackbar('保存しました', {
+          variant: 'success'
+        })
       })
       .catch((e) => {
         errHandler(e)
       })
+  }
+  if (loading) {
+    return (
+      <Layout initialized={true}>
+        <LoadingScreen text={''} />
+      </Layout>
+    )
   }
   return (
     <Layout initialized={true}>
