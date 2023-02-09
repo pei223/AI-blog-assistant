@@ -61,6 +61,7 @@ const Layout: React.FC<Props> = ({ children, initialized }) => {
       <AppBar>
         <Toolbar>
           <IconButton
+            color="inherit"
             onClick={() => {
               setSidebarOpen(!sidebarOpen)
             }}
