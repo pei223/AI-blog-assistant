@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Grid } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { useErrorHandler } from 'react-error-boundary'
-import LoadingScreen from '../components/atoms/LoadingScreen'
 import AiModelSettings from '../components/blocks/AiModelSettings'
 import Layout from '../Layout'
 import {
@@ -13,27 +12,34 @@ import {
   INITIAL_SUMMARY_AI_SETTING,
   SUMMARY_SETTING_KEY
 } from '../openai/types'
+import { getAPIKey, setAPIKey } from '../main-module'
+import APIKeyForm from '../components/blocks/APIKeyForm'
 
 const Settings = () => {
   const snack = useSnackbar()
   const errHandler = useErrorHandler()
 
+  const [apiKeyVal, setApiKeyVal] = useState('')
   const [loading, setLoading] = useState(false)
   const [aiSettingDict, setAiSettingDict] = useState<AiSettingDict>({})
 
   useEffect(() => {
-    setLoading(true)
-    window.mainProcess
-      .getAiSettingDict()
-      .then((dict) => {
+    const inner = async (): Promise<void> => {
+      setLoading(true)
+      try {
+        const dict = await window.mainProcess.getAiSettingDict()
         setAiSettingDict(dict)
-      })
-      .catch((e) => {
+        const val = await getAPIKey()
+        setApiKeyVal(val)
+      } catch (e) {
         errHandler(e)
-      })
-      .finally(() => {
+      } finally {
         setLoading(false)
-      })
+      }
+    }
+    inner()
+      .then(() => {})
+      .catch(() => {})
   }, [])
 
   const saveSummaryAiSetting = (newSetting: AiSetting) => {
@@ -66,16 +72,25 @@ const Settings = () => {
         errHandler(e)
       })
   }
+  const saveAPIKey = (newVal: string) => {
+    setAPIKey(newVal)
+      .then(() => {
+        snack.enqueueSnackbar('保存しました', {
+          variant: 'success'
+        })
+      })
+      .catch((e) => {
+        errHandler(e)
+      })
+  }
   if (loading) {
-    return (
-      <Layout initialized={true}>
-        <LoadingScreen text={''} />
-      </Layout>
-    )
+    // 空のLayoutにしているがファイル読み込みのためすぐ終わるので問題ない
+    // むしろロード画面にするとちらつく
+    return <Layout initialized={true} />
   }
   return (
     <Layout initialized={true}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ p: 3 }}>
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="目次のAI設定"
@@ -95,6 +110,9 @@ const Settings = () => {
             onSubmit={saveContentAiSetting}
             initValue={INITIAL_CONTENT_AI_SETTING}
           />
+        </Grid>
+        <Grid item sm={12}>
+          <APIKeyForm value={apiKeyVal} onSubmit={saveAPIKey} />
         </Grid>
       </Grid>
     </Layout>

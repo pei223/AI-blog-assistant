@@ -48,7 +48,7 @@ const sidebarMenuList: SidebarMenu[] = [
 ]
 
 type Props = {
-  children: React.ReactNode
+  children?: React.ReactNode
   initialized: boolean
 }
 

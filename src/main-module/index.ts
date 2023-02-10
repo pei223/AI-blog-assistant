@@ -3,6 +3,7 @@ import { type GenerateOption } from '../openai/types'
 
 const electronPrefix = '[to electron] '
 
+// TODO aiSettingDict周りも追加したい
 // TODO ここ全部デコレータとかでできたら楽
 export const getAPIKey = async (): Promise<string> => {
   if (import.meta.env.MODE !== 'production') {
