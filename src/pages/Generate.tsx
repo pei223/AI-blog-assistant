@@ -31,6 +31,11 @@ const StyledButtonWrapper = styled.div`
   margin-bottom: 20px;
 `
 
+type ElapsedTime = {
+  summary: number
+  content: number
+}
+
 const Generate = () => {
   const [loadingState, setLoadingState] = useState<
     'summary' | 'content' | null
@@ -39,6 +44,10 @@ const Generate = () => {
   const [summary, setSummary] = useState('')
   const [content, setContent] = useState('')
   const [aiSettingDict, setAiSettingDict] = useState<AiSettingDict>({})
+  const [elapsedTime, setElapsedTime] = useState<ElapsedTime>({
+    summary: 0,
+    content: 0
+  })
 
   const snack = useSnackbar()
   const errHandler = useErrorHandler()
@@ -54,7 +63,19 @@ const Generate = () => {
       })
   })
 
+  const clearResult = () => {
+    setSummary('')
+    setContent('')
+    setElapsedTime({
+      summary: 0,
+      content: 0
+    })
+  }
+
   const copyToClipboard = (text: string) => {
+    if (text === '') {
+      return
+    }
     navigator.clipboard
       .writeText(text)
       .then(() => {
@@ -69,30 +90,40 @@ const Generate = () => {
 
   const generateContentFromTitle = () => {
     const inner = async () => {
-      setLoadingState('summary')
+      clearResult()
       const summaryAiSetting =
         aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
       const contentAiSetting =
         aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
+      const { template: summaryTemplate, ...summaryGenOption } =
+        summaryAiSetting
+      const { template: contentTemplate, ...contentGenOption } =
+        contentAiSetting
       try {
-        const { template: summaryTemplate, ...summaryGenOption } =
-          summaryAiSetting
-        const { template: contentTemplate, ...contentGenOption } =
-          contentAiSetting
-
+        setLoadingState('summary')
         const summaryGenText = generateFromTemplate(summaryTemplate, {
           title
         })
+        let start = new Date().getTime()
         const _summary = await generateText(summaryGenText, summaryGenOption)
+        const summaryElapsedTime = new Date().getTime() - start
+        setElapsedTime({
+          ...elapsedTime,
+          summary: summaryElapsedTime
+        })
         setSummary(_summary)
 
         setLoadingState('content')
-
         const contentGenText = generateFromTemplate(contentTemplate, {
           title,
           summary: _summary
         })
+        start = new Date().getTime()
         const _content = await generateText(contentGenText, contentGenOption)
+        setElapsedTime({
+          summary: summaryElapsedTime,
+          content: new Date().getTime() - start
+        })
         setContent(_content)
       } catch (e) {
         errHandler(e)
@@ -107,16 +138,26 @@ const Generate = () => {
 
   const generateContentFromSummary = () => {
     const inner = async () => {
-      setLoadingState('content')
+      setContent('')
+      setElapsedTime({
+        summary: 0,
+        content: 0
+      })
+      const contentAiSetting =
+        aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
+      const { template, ...contentGenOption } = contentAiSetting
+      const contentGenText = generateFromTemplate(template, {
+        title,
+        summary
+      })
       try {
-        const contentAiSetting =
-          aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
-        const { template, ...contentGenOption } = contentAiSetting
-        const contentGenText = generateFromTemplate(template, {
-          title,
-          summary
-        })
+        setLoadingState('content')
+        const start = new Date().getTime()
         const _content = await generateText(contentGenText, contentGenOption)
+        setElapsedTime({
+          ...elapsedTime,
+          content: new Date().getTime() - start
+        })
         setContent(_content)
       } catch (e) {
         errHandler(e)
@@ -179,6 +220,12 @@ const Generate = () => {
                 setSummary(e.target.value)
               }}
             />
+            {elapsedTime.summary > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <span>{elapsedTime.summary}ms</span>
+              </Box>
+            )}
+
             <StyledButtonWrapper>
               <Button
                 variant="outlined"
@@ -215,6 +262,11 @@ const Generate = () => {
                 setContent(e.target.value)
               }}
             />
+            {elapsedTime.content > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <span>{elapsedTime.content}ms</span>
+              </Box>
+            )}
           </Box>
         </CardContent>
       </Card>
