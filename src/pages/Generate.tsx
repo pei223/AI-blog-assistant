@@ -24,6 +24,7 @@ import { cancelGenerate, generateText } from '../main-module'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { errorLog } from '../logger'
 import { useSnackbar } from 'notistack'
+import { isCanceledError } from '../errors'
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
@@ -34,10 +35,6 @@ const StyledButtonWrapper = styled.div`
 type ElapsedTime = {
   summary: number
   content: number
-}
-
-const isCanceled = (e: unknown) => {
-  return e instanceof Error && e.message.includes('canceled')
 }
 
 const Generate = () => {
@@ -141,7 +138,7 @@ const Generate = () => {
         })
         setContent(_content)
       } catch (e) {
-        if (isCanceled(e)) {
+        if (isCanceledError(e)) {
           return
         }
         errHandler(e)
@@ -178,7 +175,7 @@ const Generate = () => {
         })
         setContent(_content)
       } catch (e) {
-        if (isCanceled(e)) {
+        if (isCanceledError(e)) {
           return
         }
         errHandler(e)
