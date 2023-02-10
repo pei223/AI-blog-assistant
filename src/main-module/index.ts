@@ -3,17 +3,21 @@ import { type GenerateOption } from '../openai/types'
 
 const electronPrefix = '[to electron] '
 
-export const getAPIKey = async (): Promise<string | Error> => {
+// TODO ここ全部デコレータとかでできたら楽
+export const getAPIKey = async (): Promise<string> => {
   if (import.meta.env.MODE !== 'production') {
     debugLog(`${electronPrefix} getAPIKey`)
   }
-  const ret = await window.mainProcess.getAPIKey()
-  if (ret instanceof Error) {
-    errorLog(`${electronPrefix} getAPIKey error: ${ret.message}`)
-  } else {
+  try {
+    const ret = await window.mainProcess.getAPIKey()
     debugLog(`${electronPrefix} getAPIKey success: `, ret)
+    return ret
+  } catch (e) {
+    if (e instanceof Error) {
+      errorLog(`${electronPrefix} getAPIKey error: ${e.message}`)
+    }
+    throw e
   }
-  return ret
 }
 
 export const setAPIKey = async (keyVal: string): Promise<void> => {

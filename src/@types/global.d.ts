@@ -13,7 +13,7 @@ interface Window {
 declare let window: Window
 
 interface MainProcess {
-  getAPIKey: () => Promise<string | Error>
+  getAPIKey: () => Promise<string>
   setAPIKey: (keyVal: string) => Promise<void>
   getAiSettingDict: () => Promise<AiSettingDict>
   setAiSettingDict: (dict: AiSettingDict) => Promise<void>
