@@ -19,7 +19,7 @@ npm run clean-build-start
 
 Watchモードでrendererをビルド
 ```
-npm run build:renderer -- --mode=production  --watch
+npm run build:renderer -- --mode=development  --watch
 ```
 
 ## Production build
