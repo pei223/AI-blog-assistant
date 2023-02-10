@@ -35,6 +35,10 @@ const createWindow = () => {
     }
   )
 
+  ipcMain.handle('cancel-generate', async (_e): Promise<void> => {
+    openAiWrapper.cancelGenerate()
+  })
+
   ipcMain.handle('get-ai-setting-dict', async (_e): Promise<AiSettingDict> => {
     return await getAiSettingDict()
   })

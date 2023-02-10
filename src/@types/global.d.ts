@@ -17,5 +17,6 @@ interface MainProcess {
   setAPIKey: (keyVal: string) => Promise<void>
   getAiSettingDict: () => Promise<AiSettingDict>
   setAiSettingDict: (dict: AiSettingDict) => Promise<void>
-  generateText: (text: string, option?: GenerateOption) => Promise<string>
+  generateText: (text: string, option: GenerateOption) => Promise<string>
+  cancelGenerate: () => Promise<void>
 }

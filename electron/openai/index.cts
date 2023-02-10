@@ -9,6 +9,7 @@ import { isNotFound } from '../errors/index.cjs'
 
 export class OpenAiWrapper {
   openAiApi: OpenAIApi | null = null
+  abortController: AbortController = new AbortController()
 
   setApiKey(apiKey: string) {
     this.openAiApi = new OpenAIApi(
@@ -24,12 +25,20 @@ export class OpenAiWrapper {
         `${ErrorPrefixTypeVal.OpenAiApiNotInitialized} not initialized`
       )
     }
-    const completion = await this.openAiApi.createCompletion({
-      prompt: text,
-      ...option
-    })
+    this.abortController = new AbortController()
+    const completion = await this.openAiApi.createCompletion(
+      {
+        prompt: text,
+        ...option
+      },
+      { signal: this.abortController.signal }
+    )
     const pop = completion.data.choices.pop()
     return pop?.text == null ? '' : pop.text
+  }
+
+  cancelGenerate() {
+    this.abortController.abort()
   }
 }
 

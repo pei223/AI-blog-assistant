@@ -20,7 +20,7 @@ import {
   SUMMARY_SETTING_KEY
 } from '../openai/types'
 import LoadingScreen from '../components/atoms/LoadingScreen'
-import { generateText } from '../main-module'
+import { cancelGenerate, generateText } from '../main-module'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { errorLog } from '../logger'
 import { useSnackbar } from 'notistack'
@@ -34,6 +34,10 @@ const StyledButtonWrapper = styled.div`
 type ElapsedTime = {
   summary: number
   content: number
+}
+
+const isCanceled = (e: unknown) => {
+  return e instanceof Error && e.message.includes('canceled')
 }
 
 const Generate = () => {
@@ -88,6 +92,17 @@ const Generate = () => {
       })
   }
 
+  const cancel = () => {
+    cancelGenerate()
+      .then(() => {
+        // generateTextがキャンセルされてerror catchするため
+        // loadingStateも操作する必要がない
+      })
+      .catch((e) => {
+        errHandler(e)
+      })
+  }
+
   const generateContentFromTitle = () => {
     const inner = async () => {
       clearResult()
@@ -126,6 +141,9 @@ const Generate = () => {
         })
         setContent(_content)
       } catch (e) {
+        if (isCanceled(e)) {
+          return
+        }
         errHandler(e)
       } finally {
         setLoadingState(null)
@@ -160,6 +178,9 @@ const Generate = () => {
         })
         setContent(_content)
       } catch (e) {
+        if (isCanceled(e)) {
+          return
+        }
         errHandler(e)
       } finally {
         setLoadingState(null)
@@ -272,6 +293,7 @@ const Generate = () => {
       </Card>
       {loadingState != null && (
         <LoadingScreen
+          onCancel={cancel}
           text={
             loadingState === 'summary' ? '目次生成中...' : 'ブログ記事生成中...'
           }
