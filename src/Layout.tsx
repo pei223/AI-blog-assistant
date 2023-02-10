@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import EditIcon from '@mui/icons-material/Edit'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SettingIcon from '@mui/icons-material/Settings'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
@@ -36,6 +37,12 @@ const sidebarMenuList: SidebarMenu[] = [
     icon: () => <SettingIcon />,
     link: '/settings',
     text: '設定',
+    requireInit: true
+  },
+  {
+    icon: () => <ArrowBackIcon />,
+    link: '/',
+    text: '初期設定に戻る',
     requireInit: true
   }
 ]
