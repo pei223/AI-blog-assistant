@@ -19,9 +19,19 @@ const APIKeyForm: React.FC<Props> = ({
   onSubmit
 }) => {
   const [keyValue, setKeyValue] = useState('')
+  const [error, setError] = useState('')
   useEffect(() => {
     setKeyValue(value)
   }, [value])
+
+  const onKeyChange = (v: string) => {
+    setKeyValue(v)
+    if (v === '') {
+      setError('1文字以上入力してください')
+      return
+    }
+    setError('')
+  }
 
   const submit = () => {
     if (keyValue === '') {
@@ -40,8 +50,10 @@ const APIKeyForm: React.FC<Props> = ({
           fullWidth
           label="OpenAI APIキー"
           value={keyValue}
+          error={error !== ''}
+          helperText={error}
           onChange={(e) => {
-            setKeyValue(e.target.value)
+            onKeyChange(e.target.value)
           }}
         />
         <Typography marginTop="20px">
@@ -58,7 +70,7 @@ const APIKeyForm: React.FC<Props> = ({
         </a>
       </CardContent>
       <CardActions>
-        <Button onClick={submit} variant="contained">
+        <Button onClick={submit} disabled={keyValue === ''} variant="contained">
           {submitTitle}
         </Button>
       </CardActions>

@@ -22,6 +22,12 @@ type Props = {
   onSubmit: (v: AiSetting) => void
 }
 
+type FormErrors = {
+  template: string
+  temperature: string
+  maxTokens: string
+}
+
 const AiModelSettings: React.FC<Props> = ({
   title,
   value,
@@ -34,6 +40,11 @@ const AiModelSettings: React.FC<Props> = ({
     value.temperature as number
   )
   const [maxTokens, setMaxTokens] = useState<number>(value.max_tokens as number)
+  const [errors, setErrors] = useState<FormErrors>({
+    template: '',
+    temperature: '',
+    maxTokens: ''
+  })
 
   useEffect(() => {
     setTemplate(value.template)
@@ -41,6 +52,10 @@ const AiModelSettings: React.FC<Props> = ({
     setModel(value.model)
     setTemperature(value.temperature as number)
   }, [value])
+
+  const isErrorExists = (): boolean => {
+    return Object.values(errors).filter((e) => e !== '').length > 0
+  }
 
   const isChanged = (): boolean => {
     return !(
@@ -52,6 +67,9 @@ const AiModelSettings: React.FC<Props> = ({
   }
 
   const submit = () => {
+    if (isErrorExists()) {
+      return
+    }
     onSubmit({
       max_tokens: maxTokens,
       temperature,
@@ -64,6 +82,33 @@ const AiModelSettings: React.FC<Props> = ({
     setMaxTokens(initValue.max_tokens as number)
     setModel(initValue.model)
     setTemperature(initValue.temperature as number)
+  }
+  const onMaxTokenChange = (v: number) => {
+    setMaxTokens(v)
+    if (v > 2048 || v < 1) {
+      setErrors({ ...errors, maxTokens: '1~2048にしてください' })
+      return
+    }
+    setErrors({ ...errors, maxTokens: '' })
+  }
+  const onTemperatureChange = (v: number) => {
+    setTemperature(v)
+    if (v > 2 || v < 0) {
+      setErrors({ ...errors, temperature: '0~2にしてください' })
+      return
+    }
+    setErrors({ ...errors, temperature: '' })
+  }
+  const onTemplateChange = (v: string) => {
+    if (v.length > 1000) {
+      return
+    }
+    setTemplate(v)
+    if (v.length === 0) {
+      setErrors({ ...errors, template: '1~1000文字にしてください' })
+      return
+    }
+    setErrors({ ...errors, template: '' })
   }
 
   return (
@@ -99,24 +144,28 @@ const AiModelSettings: React.FC<Props> = ({
           <Grid item sm={6}>
             <TextField
               fullWidth
-              value={temperature}
+              value={temperature.toString()}
               label="temperature"
               type="number"
               variant="standard"
+              error={errors.temperature !== ''}
+              helperText={errors.temperature}
               onChange={(e) => {
-                setTemperature(Number(e.target.value))
+                onTemperatureChange(Number(e.target.value))
               }}
             />
           </Grid>
           <Grid item sm={6}>
             <TextField
               fullWidth
-              value={maxTokens}
-              label="最大トークン数"
+              value={maxTokens.toString()}
+              label="最大文字数"
               type="number"
               variant="standard"
+              error={errors.maxTokens !== ''}
+              helperText={errors.maxTokens}
               onChange={(e) => {
-                setMaxTokens(Number(e.target.value))
+                onMaxTokenChange(Number(e.target.value))
               }}
             />
           </Grid>
@@ -128,8 +177,10 @@ const AiModelSettings: React.FC<Props> = ({
             label="テンプレート"
             rows={6}
             value={template}
+            error={errors.template !== ''}
+            helperText={`${template.length}/1000   ${errors.template}`}
             onChange={(e) => {
-              setTemplate(e.target.value)
+              onTemplateChange(e.target.value)
             }}
           />
         </Box>
@@ -139,7 +190,7 @@ const AiModelSettings: React.FC<Props> = ({
         <Button
           color="primary"
           onClick={submit}
-          disabled={!isChanged()}
+          disabled={!isChanged() || isErrorExists()}
           variant="contained"
         >
           保存
