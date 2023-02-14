@@ -234,6 +234,7 @@ const Generate = () => {
               multiline
               rows={6}
               value={summary}
+              helperText={`${summary.length}文字`}
               onChange={(e) => {
                 setSummary(e.target.value)
               }}
@@ -276,6 +277,7 @@ const Generate = () => {
               multiline
               rows={10}
               value={content}
+              helperText={`${content.length}文字`}
               onChange={(e) => {
                 setContent(e.target.value)
               }}
