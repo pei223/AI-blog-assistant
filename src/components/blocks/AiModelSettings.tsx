@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { ValidModels, type AiSetting } from '../../openai/types'
+import ModelEstimate from './ModelEstimate'
 
 type Props = {
   title: string
@@ -120,7 +121,7 @@ const AiModelSettings: React.FC<Props> = ({
         <Typography variant="body2" color="text.secondary" marginBottom={3}>
           文章生成時の設定ができます。
         </Typography>
-        <Box sx={{ pb: 2 }}>
+        <Box sx={{ mb: 4 }}>
           <FormControl fullWidth>
             <InputLabel id="model-select-label">モデル</InputLabel>
             <Select
@@ -140,7 +141,7 @@ const AiModelSettings: React.FC<Props> = ({
             </Select>
           </FormControl>
         </Box>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid container spacing={2} sx={{ mb: 4 }}>
           <Grid item sm={6}>
             <TextField
               fullWidth
@@ -170,7 +171,7 @@ const AiModelSettings: React.FC<Props> = ({
             />
           </Grid>
         </Grid>
-        <Box>
+        <Box sx={{ mb: 4 }}>
           <TextField
             fullWidth
             multiline
@@ -182,6 +183,12 @@ const AiModelSettings: React.FC<Props> = ({
             onChange={(e) => {
               onTemplateChange(e.target.value)
             }}
+          />
+        </Box>
+        <Box sx={{ mb: 1 }}>
+          <ModelEstimate
+            maxTokens={maxTokens}
+            modelInfo={ValidModels.filter((m) => m.value === model)[0]}
           />
         </Box>
       </CardContent>
