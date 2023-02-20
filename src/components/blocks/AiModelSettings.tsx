@@ -13,7 +13,11 @@ import {
   Typography
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { ValidModels, type AiSetting } from '../../openai/types'
+import {
+  getModelFromValue,
+  ValidModels,
+  type AiSetting
+} from '../../openai/types'
 import ModelEstimate from './ModelEstimate'
 
 type Props = {
@@ -53,6 +57,9 @@ const AiModelSettings: React.FC<Props> = ({
     setModel(value.model)
     setTemperature(value.temperature as number)
   }, [value])
+  useEffect(() => {
+    onMaxTokenChange(maxTokens)
+  }, [model])
 
   const isErrorExists = (): boolean => {
     return Object.values(errors).filter((e) => e !== '').length > 0
@@ -84,10 +91,14 @@ const AiModelSettings: React.FC<Props> = ({
     setModel(initValue.model)
     setTemperature(initValue.temperature as number)
   }
+  const onModelChange = (v: string) => {
+    setModel(v)
+  }
   const onMaxTokenChange = (v: number) => {
     setMaxTokens(v)
-    if (v > 2048 || v < 1) {
-      setErrors({ ...errors, maxTokens: '1~2048にしてください' })
+    const maxLen = getModelFromValue(model).maxToken
+    if (v > maxLen || v < 1) {
+      setErrors({ ...errors, maxTokens: `1~${maxLen}にしてください` })
       return
     }
     setErrors({ ...errors, maxTokens: '' })
@@ -130,7 +141,7 @@ const AiModelSettings: React.FC<Props> = ({
               value={model}
               label="モデル"
               onChange={(e) => {
-                setModel(e.target.value)
+                onModelChange(e.target.value)
               }}
             >
               {ValidModels.map((m) => (
