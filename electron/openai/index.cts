@@ -5,7 +5,7 @@ import { join } from 'path'
 import * as fs from 'fs'
 import { AiSettingDict } from './types.cjs'
 import { appDirPath } from '../storage/index.cjs'
-import { isNotFound } from '../errors/index.cjs'
+import { isAuthError, isCanceled, isNotFound } from '../errors/index.cjs'
 import { ExponentialBackoff } from '../utils/decorator.cjs'
 
 export class OpenAiWrapper {
@@ -20,10 +20,7 @@ export class OpenAiWrapper {
     )
   }
 
-  @ExponentialBackoff(
-    5,
-    (e: any) => !(e instanceof Object && e.message === 'canceled')
-  )
+  @ExponentialBackoff(5, (e: any) => !isCanceled(e) && !isAuthError(e))
   async generateText(text: string, option: GenerateOption): Promise<string> {
     if (this.openAiApi == null) {
       throw new Error(
