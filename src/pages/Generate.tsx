@@ -37,10 +37,16 @@ type ElapsedTime = {
   content: number
 }
 
+type GenerateState = 'summary' | 'content' | 'canceling'
+const GenerateStateText: Record<GenerateState, string> = {
+  summary: '目次作成中...',
+  content: 'ブログ記事作成中...',
+  canceling: 'キャンセル中...'
+}
+
 const Generate = () => {
-  const [loadingState, setLoadingState] = useState<
-    'summary' | 'content' | null
-  >(null)
+  // リトライ機構が実行されるとキャンセルを即座にできないためキャンセル状態を設ける
+  const [generateState, setGenerateState] = useState<GenerateState | null>(null)
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
   const [content, setContent] = useState('')
@@ -90,6 +96,10 @@ const Generate = () => {
   }
 
   const cancel = () => {
+    if (generateState === 'canceling') {
+      return
+    }
+    setGenerateState('canceling')
     cancelGenerate()
       .then(() => {
         // generateTextがキャンセルされてerror catchするため
@@ -112,7 +122,7 @@ const Generate = () => {
       const { template: contentTemplate, ...contentGenOption } =
         contentAiSetting
       try {
-        setLoadingState('summary')
+        setGenerateState('summary')
         const summaryGenText = generateFromTemplate(summaryTemplate, {
           title
         })
@@ -125,7 +135,7 @@ const Generate = () => {
         })
         setSummary(_summary)
 
-        setLoadingState('content')
+        setGenerateState('content')
         const contentGenText = generateFromTemplate(contentTemplate, {
           title,
           summary: _summary
@@ -143,7 +153,7 @@ const Generate = () => {
         }
         errHandler(e)
       } finally {
-        setLoadingState(null)
+        setGenerateState(null)
       }
     }
     inner()
@@ -166,7 +176,7 @@ const Generate = () => {
         summary
       })
       try {
-        setLoadingState('content')
+        setGenerateState('content')
         const start = new Date().getTime()
         const _content = await generateText(contentGenText, contentGenOption)
         setElapsedTime({
@@ -180,7 +190,7 @@ const Generate = () => {
         }
         errHandler(e)
       } finally {
-        setLoadingState(null)
+        setGenerateState(null)
       }
     }
     inner()
@@ -205,12 +215,13 @@ const Generate = () => {
           />
           <StyledButtonWrapper>
             <Button
-              variant="outlined"
+              variant="contained"
+              disabled={title === ''}
               onClick={() => {
                 generateContentFromTitle()
               }}
             >
-              生成
+              タイトルから生成
             </Button>
           </StyledButtonWrapper>
           <Box sx={{ mb: 5 }}>
@@ -247,12 +258,13 @@ const Generate = () => {
 
             <StyledButtonWrapper>
               <Button
-                variant="outlined"
+                disabled={title === '' || summary === ''}
+                variant="contained"
                 onClick={() => {
                   generateContentFromSummary()
                 }}
               >
-                目次から生成
+                タイトルと目次から生成
               </Button>
             </StyledButtonWrapper>
           </Box>
@@ -290,12 +302,10 @@ const Generate = () => {
           </Box>
         </CardContent>
       </Card>
-      {loadingState != null && (
+      {generateState != null && (
         <LoadingScreen
           onCancel={cancel}
-          text={
-            loadingState === 'summary' ? '目次生成中...' : 'ブログ記事生成中...'
-          }
+          text={GenerateStateText[generateState]}
         />
       )}
     </Layout>

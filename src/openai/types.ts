@@ -57,7 +57,7 @@ export const ValidModels: ModelInfo[] = [
     value: 'text-davinci-003',
     description: '',
     dollarPerKiloTokens: 0.02,
-    maxToken: 2048
+    maxToken: 3000
   }
 ]
 
