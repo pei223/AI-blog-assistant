@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import {
   openAiWrapper,
@@ -49,6 +49,18 @@ const createWindow = () => {
       await setAiSettingDict(settingDict)
     }
   )
+
+  // リンクをクリックするとWebブラウザで開く
+  // NOTE: target="_blank"にすると何故か開けない
+  const handleUrlOpen = (e: Event, url: string) => {
+    if (url.match(/^http/)) {
+      e.preventDefault()
+      shell.openExternal(url)
+    }
+  }
+  mainWindow.webContents.on('will-navigate', handleUrlOpen)
+  // これは必要かわからない。
+  // mainWindow.webContents.on('new-window', handleUrlOpen)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises, n/no-path-concat
   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`)

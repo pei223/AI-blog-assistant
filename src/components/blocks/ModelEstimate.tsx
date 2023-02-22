@@ -16,7 +16,8 @@ const ModelEstimate: React.FC<Props> = ({
   return (
     <Box
       sx={{
-        color: 'rgba(0, 0, 0, 0.7)'
+        color: 'rgba(0, 0, 0, 0.7)',
+        wordBreak: 'break-all'
       }}
     >
       <Typography variant="body1" sx={{ mb: 1 }}>

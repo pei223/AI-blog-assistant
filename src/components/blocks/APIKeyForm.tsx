@@ -59,7 +59,7 @@ const APIKeyForm: React.FC<Props> = ({
         <Typography marginTop="20px">
           こちらのページからAPIキーは生成できます。
         </Typography>
-        <a href="https://platform.openai.com/account/api-keys" target="__blank">
+        <a href="https://platform.openai.com/account/api-keys">
           https://platform.openai.com/account/api-keys
         </a>
         <Typography marginTop="20px">
