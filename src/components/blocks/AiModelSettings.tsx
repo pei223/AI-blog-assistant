@@ -5,6 +5,7 @@ import {
   CardActions,
   CardContent,
   FormControl,
+  FormLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -18,6 +19,7 @@ import {
   ValidModels,
   type AiSetting
 } from '../../openai/types'
+import HelpDialogButton from '../atoms/HelpDialogButton'
 import ModelEstimate from './ModelEstimate'
 
 type Props = {
@@ -126,16 +128,23 @@ const AiModelSettings: React.FC<Props> = ({
   return (
     <Card sx={{ p: 3 }}>
       <CardContent>
-        <Typography variant="h5" component="div" marginBottom={2}>
+        <Typography
+          variant="h5"
+          component="div"
+          marginBottom={4}
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary" marginBottom={3}>
-          文章生成時の設定ができます。
-        </Typography>
-        <Box sx={{ mb: 4 }}>
+
+        <Box sx={{ mb: 4, display: 'flex', flexDirection: 'row' }}>
           <FormControl fullWidth>
             <InputLabel id="model-select-label">モデル</InputLabel>
             <Select
+              fullWidth
               labelId="model-select-label"
               id="model-select"
               value={model}
@@ -151,19 +160,42 @@ const AiModelSettings: React.FC<Props> = ({
               ))}
             </Select>
           </FormControl>
+          <HelpDialogButton
+            title="AIモデル"
+            textArr={[
+              '生成に使用するモデルを選択できます。',
+              '一番上のadaが一番コストが安く性能が悪く、一番下のdavinciがコストが高いが性能が高いです。',
+              '現状davinci以外は性能が悪いです。'
+            ]}
+            referenceUrl="https://platform.openai.com/docs/models/gpt-3"
+          />
         </Box>
         <Grid container spacing={2} sx={{ mb: 4 }}>
           <Grid item sm={6}>
             <TextField
               fullWidth
               value={temperature.toString()}
-              label="temperature"
+              label="temperature(ランダム性)"
               type="number"
               variant="standard"
               error={errors.temperature !== ''}
               helperText={errors.temperature}
               onChange={(e) => {
                 onTemperatureChange(Number(e.target.value))
+              }}
+              InputProps={{
+                endAdornment: (
+                  <HelpDialogButton
+                    title="temperature(ランダム性)"
+                    textArr={[
+                      '出力するデータのランダム性を0~2で小数で設定できます。',
+                      '0であれば確定的な文になり、毎回同じ文章を生成します。',
+                      '2であれば完全にランダムになり文章としての意味が通らなくなります。',
+                      '1付近が一番ちょうど良いと考えられます。'
+                    ]}
+                    referenceUrl="https://platform.openai.com/docs/api-reference/completions/create#completions/create-temperature"
+                  />
+                )
               }}
             />
           </Grid>
@@ -179,22 +211,55 @@ const AiModelSettings: React.FC<Props> = ({
               onChange={(e) => {
                 onMaxTokenChange(Number(e.target.value))
               }}
+              InputProps={{
+                endAdornment: (
+                  <HelpDialogButton
+                    title="最大文字数(max_tokens)"
+                    textArr={[
+                      '最大文字数を1~2048(davinciのみ3000)まで指定できます。',
+                      'あくまで最大値であり、2048に指定しても2048に近い文字数にはなりません。'
+                    ]}
+                    referenceUrl="https://platform.openai.com/docs/api-reference/completions/create#completions/create-max_tokens"
+                  />
+                )
+              }}
             />
           </Grid>
         </Grid>
         <Box sx={{ mb: 4 }}>
-          <TextField
-            fullWidth
-            multiline
-            label="テンプレート"
-            rows={6}
-            value={template}
-            error={errors.template !== ''}
-            helperText={`${template.length}/1000   ${errors.template}`}
-            onChange={(e) => {
-              onTemplateChange(e.target.value)
-            }}
-          />
+          <FormControl fullWidth>
+            <FormLabel
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              テンプレート
+              <HelpDialogButton
+                title="テンプレート"
+                textArr={[
+                  '文章生成時にAIに指定する文章のテンプレートを設定できます。',
+                  '<...>部分には実行時に文字列が埋め込まれます。(<title>ならタイトルなど)'
+                ]}
+              />
+            </FormLabel>
+            <TextField
+              multiline
+              rows={6}
+              value={template}
+              error={errors.template !== ''}
+              helperText={`${template.length}/1000   ${errors.template}`}
+              onChange={(e) => {
+                onTemplateChange(e.target.value)
+              }}
+              inputProps={{
+                style: {
+                  fontSize: '0.9rem'
+                }
+              }}
+            />
+          </FormControl>
         </Box>
         <Box sx={{ mb: 1 }}>
           <ModelEstimate
