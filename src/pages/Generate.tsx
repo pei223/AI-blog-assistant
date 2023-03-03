@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  IconButton,
   TextField,
   Typography
 } from '@mui/material'
@@ -21,10 +20,10 @@ import {
 } from '../openai/types'
 import LoadingScreen from '../components/atoms/LoadingScreen'
 import { cancelGenerate, generateText } from '../main-module'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { errorLog } from '../logger'
 import { useSnackbar } from 'notistack'
 import { isCanceledError } from '../errors'
+import ResultTextArea from '../components/blocks/ResultTextArea'
+import { errorLog } from '../logger'
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
@@ -38,6 +37,7 @@ type ElapsedTime = {
 }
 
 type GenerateState = 'summary' | 'content' | 'canceling'
+type GenerateStep = Extract<GenerateState, 'summary' | 'content'> | 'title'
 const GenerateStateText: Record<GenerateState, string> = {
   summary: '目次作成中...',
   content: 'ブログ記事作成中...',
@@ -70,29 +70,10 @@ const Generate = () => {
       })
   })
 
-  const clearResult = () => {
-    setSummary('')
-    setContent('')
-    setElapsedTime({
-      summary: 0,
-      content: 0
+  const onCopied = () => {
+    snack.enqueueSnackbar('コピーしました', {
+      variant: 'info'
     })
-  }
-
-  const copyToClipboard = (text: string) => {
-    if (text === '') {
-      return
-    }
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        snack.enqueueSnackbar('コピーしました', {
-          variant: 'info'
-        })
-      })
-      .catch((e) => {
-        errorLog(e)
-      })
   }
 
   const cancel = () => {
@@ -110,9 +91,31 @@ const Generate = () => {
       })
   }
 
-  const generateContentFromTitle = () => {
+  const generate = (startStep: GenerateStep, endStep: GenerateStep) => {
     const inner = async () => {
-      clearResult()
+      // 開始位置次第でクリアする対象を変える
+      switch (startStep) {
+        case 'title':
+          setSummary('')
+          setContent('')
+          setElapsedTime({
+            summary: 0,
+            content: 0
+          })
+          break
+        case 'summary':
+          setContent('')
+          setElapsedTime({
+            summary: 0,
+            content: 0
+          })
+          break
+        case 'content':
+          // 通常指定されない
+          errorLog('Invalid startStep: ' + startStep)
+          break
+      }
+
       const summaryAiSetting =
         aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
       const contentAiSetting =
@@ -121,81 +124,53 @@ const Generate = () => {
         summaryAiSetting
       const { template: contentTemplate, ...contentGenOption } =
         contentAiSetting
-      try {
+
+      let start: number
+      let _summary = summary
+      let summaryElapsedTime = elapsedTime.summary
+      if (startStep === 'title') {
         setGenerateState('summary')
         const summaryGenText = generateFromTemplate(summaryTemplate, {
           title
         })
-        let start = new Date().getTime()
-        const _summary = await generateText(summaryGenText, summaryGenOption)
-        const summaryElapsedTime = new Date().getTime() - start
+        start = new Date().getTime()
+        _summary = await generateText(summaryGenText, summaryGenOption)
+        summaryElapsedTime = new Date().getTime() - start
         setElapsedTime({
           ...elapsedTime,
           summary: summaryElapsedTime
         })
         setSummary(_summary)
-
-        setGenerateState('content')
-        const contentGenText = generateFromTemplate(contentTemplate, {
-          title,
-          summary: _summary
-        })
-        start = new Date().getTime()
-        const _content = await generateText(contentGenText, contentGenOption)
-        setElapsedTime({
-          summary: summaryElapsedTime,
-          content: new Date().getTime() - start
-        })
-        setContent(_content)
-      } catch (e) {
-        if (isCanceledError(e)) {
-          return
-        }
-        errHandler(e)
-      } finally {
-        setGenerateState(null)
       }
-    }
-    inner()
-      .then(() => {})
-      .catch(() => {})
-  }
 
-  const generateContentFromSummary = () => {
-    const inner = async () => {
-      setContent('')
-      setElapsedTime({
-        summary: 0,
-        content: 0
-      })
-      const contentAiSetting =
-        aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
-      const { template, ...contentGenOption } = contentAiSetting
-      const contentGenText = generateFromTemplate(template, {
+      if (endStep === 'summary') {
+        return
+      }
+
+      setGenerateState('content')
+      const contentGenText = generateFromTemplate(contentTemplate, {
         title,
-        summary
+        summary: _summary
       })
-      try {
-        setGenerateState('content')
-        const start = new Date().getTime()
-        const _content = await generateText(contentGenText, contentGenOption)
-        setElapsedTime({
-          ...elapsedTime,
-          content: new Date().getTime() - start
-        })
-        setContent(_content)
-      } catch (e) {
+      start = new Date().getTime()
+      const _content = await generateText(contentGenText, contentGenOption)
+      setElapsedTime({
+        summary: summaryElapsedTime,
+        content: new Date().getTime() - start
+      })
+      setContent(_content)
+    }
+    inner()
+      .then(() => {})
+      .catch((e) => {
         if (isCanceledError(e)) {
           return
         }
         errHandler(e)
-      } finally {
+      })
+      .finally(() => {
         setGenerateState(null)
-      }
-    }
-    inner()
-      .then(() => {})
-      .catch(() => {})
+      })
   }
 
   return (
@@ -218,87 +193,56 @@ const Generate = () => {
               variant="contained"
               disabled={title === ''}
               onClick={() => {
-                generateContentFromTitle()
+                generate('title', 'content')
               }}
             >
-              タイトルから生成
+              タイトルから目次と記事を生成
+            </Button>
+            <Button
+              sx={{ ml: 2 }}
+              variant="contained"
+              disabled={title === ''}
+              onClick={() => {
+                generate('title', 'summary')
+              }}
+            >
+              タイトルから目次のみを生成
             </Button>
           </StyledButtonWrapper>
           <Box sx={{ mb: 5 }}>
-            <Box
-              sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}
-            >
-              <Typography variant="h5" marginRight={'auto'}>
-                目次
-              </Typography>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  copyToClipboard(summary)
-                }}
-              >
-                <ContentCopyIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <TextField
-              fullWidth
-              multiline
+            <ResultTextArea
+              title="目次"
+              result={summary}
               rows={6}
-              value={summary}
-              helperText={`${summary.length}文字`}
-              onChange={(e) => {
-                setSummary(e.target.value)
+              elapsedTime={elapsedTime.summary}
+              onChange={(v) => {
+                setSummary(v)
               }}
+              onCopied={onCopied}
             />
-            {elapsedTime.summary > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <span>{elapsedTime.summary}ms</span>
-              </Box>
-            )}
-
             <StyledButtonWrapper>
               <Button
                 disabled={title === '' || summary === ''}
                 variant="contained"
                 onClick={() => {
-                  generateContentFromSummary()
+                  generate('summary', 'content')
                 }}
               >
-                タイトルと目次から生成
+                タイトルと目次から記事を生成
               </Button>
             </StyledButtonWrapper>
           </Box>
           <Box sx={{ mb: 5 }}>
-            <Box
-              sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}
-            >
-              <Typography variant="h5" marginRight={'auto'}>
-                ブログ内容
-              </Typography>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  copyToClipboard(content)
-                }}
-              >
-                <ContentCopyIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <TextField
-              fullWidth
-              multiline
-              rows={10}
-              value={content}
-              helperText={`${content.length}文字`}
-              onChange={(e) => {
-                setContent(e.target.value)
+            <ResultTextArea
+              title="ブログ内容"
+              result={content}
+              rows={6}
+              elapsedTime={elapsedTime.content}
+              onChange={(v) => {
+                setContent(v)
               }}
+              onCopied={onCopied}
             />
-            {elapsedTime.content > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <span>{elapsedTime.content}ms</span>
-              </Box>
-            )}
           </Box>
         </CardContent>
       </Card>
