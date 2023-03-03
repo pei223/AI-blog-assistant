@@ -58,6 +58,13 @@ export const ValidModels: ModelInfo[] = [
     description: '',
     dollarPerKiloTokens: 0.02,
     maxToken: 3000
+  },
+  {
+    name: 'gpt-3.5',
+    value: 'gpt-3.5-turbo',
+    description: '',
+    dollarPerKiloTokens: 0.002,
+    maxToken: 3000
   }
 ]
 

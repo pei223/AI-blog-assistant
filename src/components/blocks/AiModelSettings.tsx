@@ -164,8 +164,12 @@ const AiModelSettings: React.FC<Props> = ({
             title="AIモデル"
             textArr={[
               '生成に使用するモデルを選択できます。',
-              '一番上のadaが一番コストが安く性能が悪く、一番下のdavinciがコストが高いが性能が高いです。',
-              '現状davinci以外は性能が悪いです。'
+              `一番上の${
+                ValidModels[0].name
+              }が一番コストが安く性能が悪く、一番下の${
+                ValidModels[ValidModels.length - 1].name
+              }がコストが高いが性能が高いです。`,
+              '現状davinci/gpt-3.5以外は性能が悪いです。'
             ]}
             referenceUrl="https://platform.openai.com/docs/models/gpt-3"
           />
@@ -216,7 +220,7 @@ const AiModelSettings: React.FC<Props> = ({
                   <HelpDialogButton
                     title="最大文字数(max_tokens)"
                     textArr={[
-                      '最大文字数を1~2048(davinciのみ3000)まで指定できます。',
+                      '最大文字数を1~2048(davinci/gpt-3.5のみ3000)まで指定できます。',
                       'あくまで最大値であり、2048に指定しても2048に近い文字数にはなりません。'
                     ]}
                     referenceUrl="https://platform.openai.com/docs/api-reference/completions/create#completions/create-max_tokens"

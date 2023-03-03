@@ -4,7 +4,7 @@ export const SummaryTemplate = `下記のタイトルのブログ記事の目次
 
 `
 
-export const ContentTemplate = `以下のブログ記事の目次とタイトルを参考に、ブログ記事を日本語で作成してください。
+export const ContentTemplate = `以下のブログ記事の目次とタイトルを参考に、ブログ記事の本文を日本語で作成してください。
 ストーリーのある文章にしてください。
 一つ一つを深く掘り下げて、なぜそうなるのかを説明してください。
 
