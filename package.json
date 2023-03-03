@@ -14,7 +14,7 @@
     "clean-build-start": "npm-run-all clean build:main \"build:renderer -- --mode development\" electron:start",
     "prdbuild:win": "npm-run-all clean build:main \"build:renderer -- --mode production\" electron:build:win",
     "prdbuild:mac": "npm-run-all clean build:main \"build:renderer -- --mode production\" electron:build:mac",
-    "electron:build:win": "set NODE_ENV=production && electron-builder --win --x64 --dir",
+    "electron:build:win": "set NODE_ENV=production && electron-builder --win --x64",
     "electron:build:mac": "set NODE_ENV=production && electron-builder --mac --dir"
   },
   "build": {
