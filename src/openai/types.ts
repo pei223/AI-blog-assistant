@@ -17,7 +17,7 @@ export const INITIAL_SUMMARY_AI_SETTING: AiSetting = {
 
 export const INITIAL_CONTENT_AI_SETTING: AiSetting = {
   template: ContentTemplate,
-  model: 'text-davinci-003',
+  model: 'gpt-3.5-turbo',
   temperature: 0.8,
   max_tokens: 1024
 }
