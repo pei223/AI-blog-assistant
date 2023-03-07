@@ -8,8 +8,8 @@ import {
   Typography
 } from '@mui/material'
 import { useErrorHandler } from 'react-error-boundary'
-import Layout from '../Layout'
-import { generateFromTemplate } from '../template-mod'
+import Layout from '../../Layout'
+import { generateFromTemplate } from '../../template-mod'
 import styled from 'styled-components'
 import {
   type AiSettingDict,
@@ -17,13 +17,18 @@ import {
   INITIAL_CONTENT_AI_SETTING,
   INITIAL_SUMMARY_AI_SETTING,
   SUMMARY_SETTING_KEY
-} from '../openai/types'
-import LoadingScreen from '../components/atoms/LoadingScreen'
-import { cancelGenerate, generateText } from '../main-module'
+} from '../../openai/types'
+import LoadingScreen from '../../components/atoms/LoadingScreen'
+import { cancelGenerate, generateText } from '../../main-module'
 import { useSnackbar } from 'notistack'
-import { isCanceledError } from '../errors'
-import ResultTextArea from '../components/blocks/ResultTextArea'
-import { errorLog } from '../logger'
+import { isCanceledError } from '../../errors'
+import ResultTextArea from '../../components/blocks/ResultTextArea'
+import { errorLog } from '../../logger'
+import {
+  type GenerateState,
+  GenerateStateText,
+  type GenerateStep
+} from './types'
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
@@ -34,14 +39,6 @@ const StyledButtonWrapper = styled.div`
 type ElapsedTime = {
   summary: number
   content: number
-}
-
-type GenerateState = 'summary' | 'content' | 'canceling'
-type GenerateStep = Extract<GenerateState, 'summary' | 'content'> | 'title'
-const GenerateStateText: Record<GenerateState, string> = {
-  summary: '目次作成中...',
-  content: 'ブログ記事作成中...',
-  canceling: 'キャンセル中...'
 }
 
 const Generate = () => {
