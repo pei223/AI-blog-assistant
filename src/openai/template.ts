@@ -1,4 +1,4 @@
-export const SummaryTemplate = `下記のタイトルのブログ記事の目次を箇条書きで詳細に日本語で書いてください。
+export const SummaryTemplate = `下記のタイトルのブログ記事の目次を箇条書きで詳細に日本語で5項目書いてください。
 
 タイトル：<title>
 
