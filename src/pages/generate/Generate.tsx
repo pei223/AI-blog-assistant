@@ -65,7 +65,7 @@ const Generate = () => {
       .catch((e) => {
         errHandler(e)
       })
-  })
+  }, [])
 
   const onCopied = () => {
     snack.enqueueSnackbar('コピーしました', {
