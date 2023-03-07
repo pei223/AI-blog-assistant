@@ -10,7 +10,9 @@ import {
   CONTENT_SETTING_KEY,
   INITIAL_CONTENT_AI_SETTING,
   INITIAL_SUMMARY_AI_SETTING,
-  SUMMARY_SETTING_KEY
+  SUMMARY_SETTING_KEY,
+  CHAPTER_CONTENT_SETTING_KEY,
+  INITIAL_CHAPTER_CONTENT_AI_SETTING
 } from '../openai/types'
 import { getAPIKey, setAPIKey } from '../main-module'
 import APIKeyForm from '../components/blocks/APIKeyForm'
@@ -42,9 +44,9 @@ const Settings = () => {
       .catch(() => {})
   }, [])
 
-  const saveSummaryAiSetting = (newSetting: AiSetting) => {
+  const saveAiSetting = (newSetting: AiSetting, key: string) => {
     const newDict = { ...aiSettingDict }
-    newDict[SUMMARY_SETTING_KEY] = { ...newSetting }
+    newDict[key] = { ...newSetting }
     window.mainProcess
       .setAiSettingDict(newDict)
       .then(() => {
@@ -57,21 +59,7 @@ const Settings = () => {
         errHandler(e)
       })
   }
-  const saveContentAiSetting = (newSetting: AiSetting) => {
-    const newDict = { ...aiSettingDict }
-    newDict[CONTENT_SETTING_KEY] = { ...newSetting }
-    window.mainProcess
-      .setAiSettingDict(newDict)
-      .then(() => {
-        setAiSettingDict(newDict)
-        snack.enqueueSnackbar('保存しました', {
-          variant: 'success'
-        })
-      })
-      .catch((e) => {
-        errHandler(e)
-      })
-  }
+
   const saveAPIKey = (newVal: string) => {
     setAPIKey(newVal)
       .then(() => {
@@ -83,6 +71,7 @@ const Settings = () => {
         errHandler(e)
       })
   }
+
   if (loading) {
     // 空のLayoutにしているがファイル読み込みのためすぐ終わるので問題ない
     // むしろロード画面にするとちらつく
@@ -97,7 +86,9 @@ const Settings = () => {
             value={
               aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
             }
-            onSubmit={saveSummaryAiSetting}
+            onSubmit={(v) => {
+              saveAiSetting(v, SUMMARY_SETTING_KEY)
+            }}
             initValue={INITIAL_SUMMARY_AI_SETTING}
           />
         </Grid>
@@ -107,8 +98,23 @@ const Settings = () => {
             value={
               aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
             }
-            onSubmit={saveContentAiSetting}
+            onSubmit={(v) => {
+              saveAiSetting(v, CONTENT_SETTING_KEY)
+            }}
             initValue={INITIAL_CONTENT_AI_SETTING}
+          />
+        </Grid>
+        <Grid item sm={12} md={6}>
+          <AiModelSettings
+            title="章ごとの文章のAI設定"
+            value={
+              aiSettingDict[CHAPTER_CONTENT_SETTING_KEY] ??
+              INITIAL_CHAPTER_CONTENT_AI_SETTING
+            }
+            onSubmit={(v) => {
+              saveAiSetting(v, CHAPTER_CONTENT_SETTING_KEY)
+            }}
+            initValue={INITIAL_CHAPTER_CONTENT_AI_SETTING}
           />
         </Grid>
         <Grid item sm={12}>
