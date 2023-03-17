@@ -24,6 +24,7 @@ import ModelEstimate from './ModelEstimate'
 
 type Props = {
   title: string
+  description: string
   value: AiSetting
   initValue: AiSetting
   onSubmit: (v: AiSetting) => void
@@ -37,6 +38,7 @@ type FormErrors = {
 
 const AiModelSettings: React.FC<Props> = ({
   title,
+  description,
   value,
   initValue,
   onSubmit
@@ -131,7 +133,7 @@ const AiModelSettings: React.FC<Props> = ({
         <Typography
           variant="h5"
           component="div"
-          marginBottom={4}
+          marginBottom={3}
           sx={{
             display: 'flex',
             alignItems: 'center'
@@ -139,7 +141,9 @@ const AiModelSettings: React.FC<Props> = ({
         >
           {title}
         </Typography>
-
+        <Typography variant="body2" marginBottom={3}>
+          {description}
+        </Typography>
         <Box sx={{ mb: 4, display: 'flex', flexDirection: 'row' }}>
           <FormControl fullWidth>
             <InputLabel id="model-select-label">モデル</InputLabel>

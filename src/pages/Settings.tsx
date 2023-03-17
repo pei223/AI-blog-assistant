@@ -83,6 +83,7 @@ const Settings = () => {
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="目次のAI設定"
+            description="ブログ生成・長文ブログ生成両方で使用されます。"
             value={
               aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
             }
@@ -95,6 +96,7 @@ const Settings = () => {
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="ブログのAI設定"
+            description="ブログ生成の本文の設定値です。長文ブログ生成では使用されません。"
             value={
               aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
             }
@@ -107,6 +109,7 @@ const Settings = () => {
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="章ごとの文章のAI設定"
+            description="長文ブログ生成の章ごとの文章の設定値です。ブログ生成では使用されません。"
             value={
               aiSettingDict[CHAPTER_CONTENT_SETTING_KEY] ??
               INITIAL_CHAPTER_CONTENT_AI_SETTING
