@@ -15,13 +15,14 @@
     "prdbuild:win": "npm-run-all clean build:main \"build:renderer -- --mode production\" electron:build:win",
     "prdbuild:mac": "npm-run-all clean build:main \"build:renderer -- --mode production\" electron:build:mac",
     "electron:build:win": "set NODE_ENV=production && electron-builder --win --x64",
-    "electron:build:mac": "set NODE_ENV=production && electron-builder --mac --dir"
+    "electron:build:mac": "set NODE_ENV=production && electron-builder --mac"
   },
   "build": {
+    "appId": "com.p2app.ai-blog-assistant",
+    "artifactName": "ai-blog-assistant-v${version}-Setup.${ext}",
     "extraMetadata": {
       "main": "./dist/main/main.cjs"
     },
-    "appId": "com.electron.yourapp",
     "directories": {
       "output": "electron-build"
     },
