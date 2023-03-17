@@ -7,3 +7,8 @@ export const GenerateStateText: Record<GenerateState, string> = {
   content: 'ブログ記事作成中...',
   canceling: 'キャンセル中...'
 }
+
+export type ChapterContent = {
+  chapter: string
+  content: string
+}
