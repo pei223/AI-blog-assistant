@@ -1,6 +1,10 @@
 ## AI-blog-assistant
 OpenAIを用いたブログ生成ツール
 
+
+https://user-images.githubusercontent.com/19645346/225935421-9eebdefd-8c77-4d32-84b4-f68251fd9587.mp4
+
+
 ## Setup
 ```
 npm i
