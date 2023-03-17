@@ -1,0 +1,35 @@
+name: Release
+
+env:
+  NODE_VERSION: 19.5.0
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build (windows)
+        run: npm run prdbuild:win
+      - name: Build (macOS)
+        run: npm run prdbuild:mac
+      - name: Create release with artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ git describe --tags --abbrev=0 }}
+          tag_name: ${{ git describe --tags --abbrev=0 }}
+          generate_release_notes: true
+          files: |
+            ./electron-build/ai-blog-assistant-v${{ git describe --tags --abbrev=0 }}-Setup.dmg
+            ./electron-build/ai-blog-assistant-v${{ git describe --tags --abbrev=0 }}-Setup.exe
