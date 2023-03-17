@@ -172,7 +172,7 @@ const Generate = () => {
 
   return (
     <Layout initialized={true}>
-      <Typography variant="h3" marginY={'30px'}>
+      <Typography variant="h4" marginY={'30px'}>
         ブログ生成
       </Typography>
       <Card sx={{ mb: 5 }}>
