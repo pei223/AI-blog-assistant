@@ -1,0 +1,57 @@
+name: Release
+
+env:
+  NODE_VERSION: 19.5.0
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Show tag
+        run: |
+          git describe --tags --abbrev=0
+          echo "TAG=$TAG" >> $GITHUB_ENV
+        env:
+          TAG: git describe --tags --abbrev=0
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: |
+          npm ci
+      - name: Build
+        run: |
+          npm run clean
+          npm run build:main
+          npm run build:renderer
+      # npm run electron:build:macは今はうまくいかないのでひとまず保留
+      - name: Pack (windows/macOS)
+        run: |
+          docker run --rm \
+            --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') \
+            --env ELECTRON_CACHE="/root/.cache/electron" \
+            --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" \
+            -v ${PWD}:/project \
+            -v ${PWD##*/}-node-modules:/project/node_modules \
+            -v ~/.cache/electron:/root/.cache/electron \
+            -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+            electronuserland/builder:wine npm i -g electron-builder && npm run electron:build:win
+      - name: Fix directory permission
+        run: |
+          sudo chmod -R a+rw dist
+      - name: Create release with artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.TAG }}
+          tag_name: ${{ env.TAG }}
+          generate_release_notes: true
+          files: |
+            ./electron-build/ai-blog-assistant-v${{ env.TAG }}-Setup.exe
