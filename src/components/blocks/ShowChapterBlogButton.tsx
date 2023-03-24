@@ -43,6 +43,10 @@ const ShowChapterBlogButton: React.FC<Props> = ({
         errorLog(e)
       })
   }
+
+  const totalTextCount = chapterContents
+    .map((v) => v.chapter.length + v.content.length)
+    .reduce((prev, current) => prev + current, 0)
   return (
     <>
       <Button
@@ -72,6 +76,9 @@ const ShowChapterBlogButton: React.FC<Props> = ({
           ))}
         </DialogContent>
         <DialogActions>
+          <Typography variant="body1" sx={{ mr: 3 }}>
+            {totalTextCount}文字
+          </Typography>
           <Button
             variant="contained"
             onClick={() => {
