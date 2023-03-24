@@ -103,6 +103,13 @@ const Layout: React.FC<Props> = ({ children, initialized }) => {
                   </ListItemButton>
                 </ListItem>
               ))}
+              <ListItem>
+                <ListItemText>
+                  <Typography variant="body1" sx={{ ml: 2, mt: 4 }}>
+                    Version {import.meta.env.APP_VERSION}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
             </StyledList>
           </Drawer>
         </Toolbar>

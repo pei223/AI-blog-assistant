@@ -4,6 +4,7 @@
 declare namespace NodeJS {
   interface ImportMetaEnv {
     MODE: 'development' | 'production'
+    APP_VERSION: string
   }
 }
 
