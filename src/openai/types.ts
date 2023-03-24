@@ -1,5 +1,9 @@
 import { type CreateCompletionRequest } from 'openai'
-import { ContentTemplate, SummaryTemplate } from './template'
+import {
+  ContentTemplate,
+  SummaryTemplate,
+  ChapterContentTemplate
+} from './template'
 
 export type GenerateOption = Omit<CreateCompletionRequest, 'prompt'>
 
@@ -17,6 +21,13 @@ export const INITIAL_SUMMARY_AI_SETTING: AiSetting = {
 
 export const INITIAL_CONTENT_AI_SETTING: AiSetting = {
   template: ContentTemplate,
+  model: 'gpt-3.5-turbo',
+  temperature: 0.8,
+  max_tokens: 1024
+}
+
+export const INITIAL_CHAPTER_CONTENT_AI_SETTING: AiSetting = {
+  template: ChapterContentTemplate,
   model: 'gpt-3.5-turbo',
   temperature: 0.8,
   max_tokens: 1024
@@ -78,3 +89,4 @@ export const getModelFromValue = (v: string) => {
 
 export const SUMMARY_SETTING_KEY = 'summary'
 export const CONTENT_SETTING_KEY = 'content'
+export const CHAPTER_CONTENT_SETTING_KEY = 'chapter-content'

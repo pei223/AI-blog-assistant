@@ -10,9 +10,11 @@ import {
   CONTENT_SETTING_KEY,
   INITIAL_CONTENT_AI_SETTING,
   INITIAL_SUMMARY_AI_SETTING,
-  SUMMARY_SETTING_KEY
+  SUMMARY_SETTING_KEY,
+  CHAPTER_CONTENT_SETTING_KEY,
+  INITIAL_CHAPTER_CONTENT_AI_SETTING
 } from '../openai/types'
-import { getAPIKey, setAPIKey } from '../main-module'
+import { electronModule } from '../main-module'
 import APIKeyForm from '../components/blocks/APIKeyForm'
 
 const Settings = () => {
@@ -27,9 +29,9 @@ const Settings = () => {
     const inner = async (): Promise<void> => {
       setLoading(true)
       try {
-        const dict = await window.mainProcess.getAiSettingDict()
+        const dict = await electronModule.getAiSettingDict()
         setAiSettingDict(dict)
-        const val = await getAPIKey()
+        const val = await electronModule.getAPIKey()
         setApiKeyVal(val)
       } catch (e) {
         errHandler(e)
@@ -42,10 +44,10 @@ const Settings = () => {
       .catch(() => {})
   }, [])
 
-  const saveSummaryAiSetting = (newSetting: AiSetting) => {
+  const saveAiSetting = (newSetting: AiSetting, key: string) => {
     const newDict = { ...aiSettingDict }
-    newDict[SUMMARY_SETTING_KEY] = { ...newSetting }
-    window.mainProcess
+    newDict[key] = { ...newSetting }
+    electronModule
       .setAiSettingDict(newDict)
       .then(() => {
         setAiSettingDict(newDict)
@@ -57,23 +59,10 @@ const Settings = () => {
         errHandler(e)
       })
   }
-  const saveContentAiSetting = (newSetting: AiSetting) => {
-    const newDict = { ...aiSettingDict }
-    newDict[CONTENT_SETTING_KEY] = { ...newSetting }
-    window.mainProcess
-      .setAiSettingDict(newDict)
-      .then(() => {
-        setAiSettingDict(newDict)
-        snack.enqueueSnackbar('保存しました', {
-          variant: 'success'
-        })
-      })
-      .catch((e) => {
-        errHandler(e)
-      })
-  }
+
   const saveAPIKey = (newVal: string) => {
-    setAPIKey(newVal)
+    electronModule
+      .setAPIKey(newVal)
       .then(() => {
         snack.enqueueSnackbar('保存しました', {
           variant: 'success'
@@ -83,6 +72,7 @@ const Settings = () => {
         errHandler(e)
       })
   }
+
   if (loading) {
     // 空のLayoutにしているがファイル読み込みのためすぐ終わるので問題ない
     // むしろロード画面にするとちらつく
@@ -94,21 +84,41 @@ const Settings = () => {
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="目次のAI設定"
+            description="ブログ生成・長文ブログ生成両方で使用されます。"
             value={
               aiSettingDict[SUMMARY_SETTING_KEY] ?? INITIAL_SUMMARY_AI_SETTING
             }
-            onSubmit={saveSummaryAiSetting}
+            onSubmit={(v) => {
+              saveAiSetting(v, SUMMARY_SETTING_KEY)
+            }}
             initValue={INITIAL_SUMMARY_AI_SETTING}
           />
         </Grid>
         <Grid item sm={12} md={6}>
           <AiModelSettings
             title="ブログのAI設定"
+            description="ブログ生成の本文の設定値です。長文ブログ生成では使用されません。"
             value={
               aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
             }
-            onSubmit={saveContentAiSetting}
+            onSubmit={(v) => {
+              saveAiSetting(v, CONTENT_SETTING_KEY)
+            }}
             initValue={INITIAL_CONTENT_AI_SETTING}
+          />
+        </Grid>
+        <Grid item sm={12} md={6}>
+          <AiModelSettings
+            title="章ごとの文章のAI設定"
+            description="長文ブログ生成の章ごとの文章の設定値です。ブログ生成では使用されません。"
+            value={
+              aiSettingDict[CHAPTER_CONTENT_SETTING_KEY] ??
+              INITIAL_CHAPTER_CONTENT_AI_SETTING
+            }
+            onSubmit={(v) => {
+              saveAiSetting(v, CHAPTER_CONTENT_SETTING_KEY)
+            }}
+            initValue={INITIAL_CHAPTER_CONTENT_AI_SETTING}
           />
         </Grid>
         <Grid item sm={12}>

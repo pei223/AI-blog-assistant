@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import EditIcon from '@mui/icons-material/Edit'
+import BorderColorIcon from '@mui/icons-material/BorderColor'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SettingIcon from '@mui/icons-material/Settings'
 import { useNavigate } from 'react-router-dom'
@@ -31,6 +32,12 @@ const sidebarMenuList: SidebarMenu[] = [
     icon: () => <EditIcon />,
     link: '/generate',
     text: 'ブログ生成',
+    requireInit: true
+  },
+  {
+    icon: () => <BorderColorIcon />,
+    link: '/generate-long-text',
+    text: '長文ブログ生成',
     requireInit: true
   },
   {

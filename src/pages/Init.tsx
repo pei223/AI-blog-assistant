@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
 import { useNavigate } from 'react-router'
-import { getAPIKey, setAPIKey } from '../main-module'
+import { electronModule } from '../main-module'
 import { useErrorHandler } from 'react-error-boundary'
 import Layout from '../Layout'
 import APIKeyForm from '../components/blocks/APIKeyForm'
@@ -12,7 +12,8 @@ const Init = () => {
   const errHandler = useErrorHandler()
 
   useEffect(() => {
-    getAPIKey()
+    electronModule
+      .getAPIKey()
       .then((val: string) => {
         setApiKeyVal(val)
       })
@@ -22,7 +23,8 @@ const Init = () => {
   }, [])
 
   const onSubmit = (newVal: string) => {
-    setAPIKey(newVal)
+    electronModule
+      .setAPIKey(newVal)
       .then(() => {
         navigate('/generate')
       })

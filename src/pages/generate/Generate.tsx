@@ -8,8 +8,8 @@ import {
   Typography
 } from '@mui/material'
 import { useErrorHandler } from 'react-error-boundary'
-import Layout from '../Layout'
-import { generateFromTemplate } from '../template-mod'
+import Layout from '../../Layout'
+import { generateFromTemplate } from '../../template-mod'
 import styled from 'styled-components'
 import {
   type AiSettingDict,
@@ -17,13 +17,18 @@ import {
   INITIAL_CONTENT_AI_SETTING,
   INITIAL_SUMMARY_AI_SETTING,
   SUMMARY_SETTING_KEY
-} from '../openai/types'
-import LoadingScreen from '../components/atoms/LoadingScreen'
-import { cancelGenerate, generateText } from '../main-module'
+} from '../../openai/types'
+import LoadingScreen from '../../components/atoms/LoadingScreen'
+import { electronModule } from '../../main-module'
 import { useSnackbar } from 'notistack'
-import { isCanceledError } from '../errors'
-import ResultTextArea from '../components/blocks/ResultTextArea'
-import { errorLog } from '../logger'
+import { isCanceledError } from '../../errors'
+import ResultTextArea from '../../components/blocks/ResultTextArea'
+import { errorLog } from '../../logger'
+import {
+  type GenerateState,
+  GenerateStateText,
+  type GenerateStep
+} from './types'
 
 const StyledButtonWrapper = styled.div`
   text-align: center;
@@ -34,14 +39,6 @@ const StyledButtonWrapper = styled.div`
 type ElapsedTime = {
   summary: number
   content: number
-}
-
-type GenerateState = 'summary' | 'content' | 'canceling'
-type GenerateStep = Extract<GenerateState, 'summary' | 'content'> | 'title'
-const GenerateStateText: Record<GenerateState, string> = {
-  summary: '目次作成中...',
-  content: 'ブログ記事作成中...',
-  canceling: 'キャンセル中...'
 }
 
 const Generate = () => {
@@ -60,7 +57,7 @@ const Generate = () => {
   const errHandler = useErrorHandler()
 
   useEffect(() => {
-    window.mainProcess
+    electronModule
       .getAiSettingDict()
       .then((dict) => {
         setAiSettingDict(dict)
@@ -68,7 +65,7 @@ const Generate = () => {
       .catch((e) => {
         errHandler(e)
       })
-  })
+  }, [])
 
   const onCopied = () => {
     snack.enqueueSnackbar('コピーしました', {
@@ -81,7 +78,8 @@ const Generate = () => {
       return
     }
     setGenerateState('canceling')
-    cancelGenerate()
+    electronModule
+      .cancelGenerate()
       .then(() => {
         // generateTextがキャンセルされてerror catchするため
         // loadingStateも操作する必要がない
@@ -134,7 +132,10 @@ const Generate = () => {
           title
         })
         start = new Date().getTime()
-        _summary = await generateText(summaryGenText, summaryGenOption)
+        _summary = await electronModule.generateText(
+          summaryGenText,
+          summaryGenOption
+        )
         summaryElapsedTime = new Date().getTime() - start
         setElapsedTime({
           ...elapsedTime,
@@ -153,7 +154,10 @@ const Generate = () => {
         summary: _summary
       })
       start = new Date().getTime()
-      const _content = await generateText(contentGenText, contentGenOption)
+      const _content = await electronModule.generateText(
+        contentGenText,
+        contentGenOption
+      )
       setElapsedTime({
         summary: summaryElapsedTime,
         content: new Date().getTime() - start
@@ -175,7 +179,7 @@ const Generate = () => {
 
   return (
     <Layout initialized={true}>
-      <Typography variant="h3" marginY={'30px'}>
+      <Typography variant="h4" marginY={'30px'}>
         ブログ生成
       </Typography>
       <Card sx={{ mb: 5 }}>
