@@ -19,7 +19,7 @@ import {
   SUMMARY_SETTING_KEY
 } from '../../openai/types'
 import LoadingScreen from '../../components/atoms/LoadingScreen'
-import { cancelGenerate, generateText } from '../../main-module'
+import { electronModule } from '../../main-module'
 import { useSnackbar } from 'notistack'
 import { isCanceledError } from '../../errors'
 import ResultTextArea from '../../components/blocks/ResultTextArea'
@@ -57,7 +57,7 @@ const Generate = () => {
   const errHandler = useErrorHandler()
 
   useEffect(() => {
-    window.mainProcess
+    electronModule
       .getAiSettingDict()
       .then((dict) => {
         setAiSettingDict(dict)
@@ -78,7 +78,8 @@ const Generate = () => {
       return
     }
     setGenerateState('canceling')
-    cancelGenerate()
+    electronModule
+      .cancelGenerate()
       .then(() => {
         // generateTextがキャンセルされてerror catchするため
         // loadingStateも操作する必要がない
@@ -131,7 +132,10 @@ const Generate = () => {
           title
         })
         start = new Date().getTime()
-        _summary = await generateText(summaryGenText, summaryGenOption)
+        _summary = await electronModule.generateText(
+          summaryGenText,
+          summaryGenOption
+        )
         summaryElapsedTime = new Date().getTime() - start
         setElapsedTime({
           ...elapsedTime,
@@ -150,7 +154,10 @@ const Generate = () => {
         summary: _summary
       })
       start = new Date().getTime()
-      const _content = await generateText(contentGenText, contentGenOption)
+      const _content = await electronModule.generateText(
+        contentGenText,
+        contentGenOption
+      )
       setElapsedTime({
         summary: summaryElapsedTime,
         content: new Date().getTime() - start

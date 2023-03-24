@@ -14,7 +14,7 @@ import {
   CHAPTER_CONTENT_SETTING_KEY,
   INITIAL_CHAPTER_CONTENT_AI_SETTING
 } from '../openai/types'
-import { getAPIKey, setAPIKey } from '../main-module'
+import { electronModule } from '../main-module'
 import APIKeyForm from '../components/blocks/APIKeyForm'
 
 const Settings = () => {
@@ -29,9 +29,9 @@ const Settings = () => {
     const inner = async (): Promise<void> => {
       setLoading(true)
       try {
-        const dict = await window.mainProcess.getAiSettingDict()
+        const dict = await electronModule.getAiSettingDict()
         setAiSettingDict(dict)
-        const val = await getAPIKey()
+        const val = await electronModule.getAPIKey()
         setApiKeyVal(val)
       } catch (e) {
         errHandler(e)
@@ -47,7 +47,7 @@ const Settings = () => {
   const saveAiSetting = (newSetting: AiSetting, key: string) => {
     const newDict = { ...aiSettingDict }
     newDict[key] = { ...newSetting }
-    window.mainProcess
+    electronModule
       .setAiSettingDict(newDict)
       .then(() => {
         setAiSettingDict(newDict)
@@ -61,7 +61,8 @@ const Settings = () => {
   }
 
   const saveAPIKey = (newVal: string) => {
-    setAPIKey(newVal)
+    electronModule
+      .setAPIKey(newVal)
       .then(() => {
         snack.enqueueSnackbar('保存しました', {
           variant: 'success'
