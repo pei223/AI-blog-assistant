@@ -170,10 +170,8 @@ const AiModelSettings: React.FC<Props> = ({
               '生成に使用するモデルを選択できます。',
               `一番上の${
                 ValidModels[0].name
-              }が一番コストが安く性能が悪く、一番下の${
-                ValidModels[ValidModels.length - 1].name
-              }がコストが高いが性能が高いです。`,
-              '現状davinci/gpt-3.5以外は性能が悪いです。'
+              }が一コストが高いが性能が高いです。`,
+              '現状gpt-3.5/davinciのみ実用レベルの性能です。'
             ]}
             referenceUrl="https://platform.openai.com/docs/models/gpt-3"
           />

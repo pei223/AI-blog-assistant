@@ -96,19 +96,6 @@ const Settings = () => {
         </Grid>
         <Grid item sm={12} md={6}>
           <AiModelSettings
-            title="ブログのAI設定"
-            description="ブログ生成の本文の設定値です。長文ブログ生成では使用されません。"
-            value={
-              aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
-            }
-            onSubmit={(v) => {
-              saveAiSetting(v, CONTENT_SETTING_KEY)
-            }}
-            initValue={INITIAL_CONTENT_AI_SETTING}
-          />
-        </Grid>
-        <Grid item sm={12} md={6}>
-          <AiModelSettings
             title="章ごとの文章のAI設定"
             description="長文ブログ生成の章ごとの文章の設定値です。ブログ生成では使用されません。"
             value={
@@ -119,6 +106,19 @@ const Settings = () => {
               saveAiSetting(v, CHAPTER_CONTENT_SETTING_KEY)
             }}
             initValue={INITIAL_CHAPTER_CONTENT_AI_SETTING}
+          />
+        </Grid>
+        <Grid item sm={12} md={6}>
+          <AiModelSettings
+            title="ブログのAI設定"
+            description="ブログ生成の本文の設定値です。長文ブログ生成では使用されません。"
+            value={
+              aiSettingDict[CONTENT_SETTING_KEY] ?? INITIAL_CONTENT_AI_SETTING
+            }
+            onSubmit={(v) => {
+              saveAiSetting(v, CONTENT_SETTING_KEY)
+            }}
+            initValue={INITIAL_CONTENT_AI_SETTING}
           />
         </Grid>
         <Grid item sm={12}>
