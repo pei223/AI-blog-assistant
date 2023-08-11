@@ -70,7 +70,7 @@ const ResultTextArea: React.FC<Props> = ({
       />
       {elapsedTime > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <span>{elapsedTime}ms</span>
+          <span>{elapsedTime / 1000}秒</span>
         </Box>
       )}
     </Box>
