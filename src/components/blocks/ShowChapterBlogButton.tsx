@@ -63,6 +63,7 @@ const ShowChapterBlogButton: React.FC<Props> = ({
         onClose={() => {
           setOpen(false)
         }}
+        fullWidth
       >
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
