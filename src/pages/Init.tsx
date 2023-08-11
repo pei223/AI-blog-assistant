@@ -26,7 +26,7 @@ const Init = () => {
     electronModule
       .setAPIKey(newVal)
       .then(() => {
-        navigate('/generate')
+        navigate('/generate-long-text')
       })
       .catch((e) => {
         errHandler(e)

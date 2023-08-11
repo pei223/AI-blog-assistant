@@ -29,15 +29,15 @@ interface SidebarMenu {
 
 const sidebarMenuList: SidebarMenu[] = [
   {
-    icon: () => <EditIcon />,
-    link: '/generate',
-    text: 'ブログ生成',
-    requireInit: true
-  },
-  {
     icon: () => <BorderColorIcon />,
     link: '/generate-long-text',
     text: '長文ブログ生成',
+    requireInit: true
+  },
+  {
+    icon: () => <EditIcon />,
+    link: '/generate',
+    text: 'ブログ生成',
     requireInit: true
   },
   {
