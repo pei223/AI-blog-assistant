@@ -1,7 +1,7 @@
 {
   "name": "ai-blog-assistant",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "lint": "eslint --fix ./**/*.{tsx,ts}",
