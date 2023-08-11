@@ -142,7 +142,7 @@ const GenerateLongText = () => {
     })
     setChapterContents([])
     // setStateしても描画はされるが即座に更新されないためキャッシュする
-    let newChapterContents: ChapterContent[] = []
+    const newChapterContents: ChapterContent[] = []
     let newElapsedTime = Object.assign({}, elapsedTime)
     for (let i = 0; i < chapters.length; i++) {
       setContentCount({
@@ -201,28 +201,6 @@ const GenerateLongText = () => {
           />
           <Box sx={{ textAlign: 'center', my: 3 }}>
             <Button
-              variant="contained"
-              disabled={title === ''}
-              onClick={() => {
-                generateSummary()
-                  .then(() => {
-                    generateContents()
-                      .then(() => {})
-                      .catch((e) => {
-                        onError(e)
-                      })
-                  })
-                  .catch((e) => {
-                    onError(e)
-                  })
-                  .finally(() => {
-                    setGenerateState(null)
-                  })
-              }}
-            >
-              タイトルから目次と記事を生成
-            </Button>
-            <Button
               sx={{ ml: 2 }}
               variant="contained"
               disabled={title === ''}
@@ -237,7 +215,7 @@ const GenerateLongText = () => {
                   })
               }}
             >
-              タイトルから目次のみを生成
+              タイトルから目次を生成
             </Button>
           </Box>
           <Box sx={{ mb: 5 }}>
